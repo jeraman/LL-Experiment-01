@@ -112,6 +112,8 @@ void ofApp::drawBackground() {
         ofBackground(255, 100, 100, 150);
     }
     
+    inter.draw();
+    
 }
 
 // draw the left channel:
@@ -126,8 +128,9 @@ void ofApp::drawMic() {
     ofBeginShape();
     
     for (unsigned int i = 0; i < leftMic.size(); i++){
+        float average=(leftMic[i]+rightMic[i])/2;
         float xpos= ((i/(float)leftMic.size())*ofGetWidth());
-        float ypos=((ofGetHeight()/2) - leftMic[i]*1000.0f);
+        float ypos=((ofGetHeight()/2) - average*1000.0f);
         
         ofVertex(xpos, ypos);
     }

@@ -7,8 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		791629321D89CE7A00C2A1D1 /* loop_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7916292E1D89CE7A00C2A1D1 /* loop_manager.cpp */; };
-		791629331D89CE7A00C2A1D1 /* loop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 791629301D89CE7A00C2A1D1 /* loop.cpp */; };
+		5F3B4248B2408B902271BD02 /* ofxMultiTouchPad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0ACCE60918B03FEFE72D00A5 /* ofxMultiTouchPad.cpp */; };
+		7909A2941D8B226800DD6C63 /* interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7909A2921D8B226800DD6C63 /* interface.cpp */; };
+		79A024D21D8B217500B276FA /* loop_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 79A024CE1D8B217500B276FA /* loop_manager.cpp */; };
+		79A024D31D8B217500B276FA /* loop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 79A024D01D8B217500B276FA /* loop.cpp */; };
+		79E0AA481D8B209D00A95BB5 /* MultitouchSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79E0AA471D8B209D00A95BB5 /* MultitouchSupport.framework */; };
 		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
 		E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1D0A3A1BDC003C02F2 /* main.cpp */; };
 		E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */; };
@@ -44,10 +47,16 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		7916292E1D89CE7A00C2A1D1 /* loop_manager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = loop_manager.cpp; sourceTree = "<group>"; };
-		7916292F1D89CE7A00C2A1D1 /* loop_manager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = loop_manager.h; sourceTree = "<group>"; };
-		791629301D89CE7A00C2A1D1 /* loop.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = loop.cpp; sourceTree = "<group>"; };
-		791629311D89CE7A00C2A1D1 /* loop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = loop.h; sourceTree = "<group>"; };
+		01E9C77AA1EAB33607F5D72E /* ofxMultiTouchPad.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxMultiTouchPad.h; path = ../../addons/ofxMultiTouchPad/src/ofxMultiTouchPad.h; sourceTree = SOURCE_ROOT; };
+		0ACCE60918B03FEFE72D00A5 /* ofxMultiTouchPad.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxMultiTouchPad.cpp; path = ../../addons/ofxMultiTouchPad/src/ofxMultiTouchPad.cpp; sourceTree = SOURCE_ROOT; };
+		7909A2921D8B226800DD6C63 /* interface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = interface.cpp; sourceTree = "<group>"; };
+		7909A2931D8B226800DD6C63 /* interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = interface.h; sourceTree = "<group>"; };
+		79A024CE1D8B217500B276FA /* loop_manager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = loop_manager.cpp; sourceTree = "<group>"; };
+		79A024CF1D8B217500B276FA /* loop_manager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = loop_manager.h; sourceTree = "<group>"; };
+		79A024D01D8B217500B276FA /* loop.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = loop.cpp; sourceTree = "<group>"; };
+		79A024D11D8B217500B276FA /* loop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = loop.h; sourceTree = "<group>"; };
+		79E0AA471D8B209D00A95BB5 /* MultitouchSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MultitouchSupport.framework; path = ../../../../../../../../../System/Library/PrivateFrameworks/MultitouchSupport.framework; sourceTree = "<group>"; };
+		D5374A2100A9BBDA3D9BDD24 /* MTTypes.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = MTTypes.h; path = ../../addons/ofxMultiTouchPad/src/MTTypes.h; sourceTree = SOURCE_ROOT; };
 		E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openFrameworksLib.xcodeproj; path = ../../libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		E4B69B5B0A3A1756003C02F2 /* advanced_looperDebug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = advanced_looperDebug.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4B69E1D0A3A1BDC003C02F2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = SOURCE_ROOT; };
@@ -63,6 +72,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				79E0AA481D8B209D00A95BB5 /* MultitouchSupport.framework in Frameworks */,
 				E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -70,6 +80,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0B520A8F9CBD72DD1ACC7E64 /* ofxMultiTouchPad */ = {
+			isa = PBXGroup;
+			children = (
+				E443632A9DA1C74D78AA5CF9 /* src */,
+			);
+			name = ofxMultiTouchPad;
+			sourceTree = "<group>";
+		};
 		6948EE371B920CB800B5AC1A /* local_addons */ = {
 			isa = PBXGroup;
 			children = (
@@ -80,6 +98,7 @@
 		BB4B014C10F69532006C3DED /* addons */ = {
 			isa = PBXGroup;
 			children = (
+				0B520A8F9CBD72DD1ACC7E64 /* ofxMultiTouchPad */,
 			);
 			name = addons;
 			sourceTree = "<group>";
@@ -92,9 +111,20 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		E443632A9DA1C74D78AA5CF9 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				D5374A2100A9BBDA3D9BDD24 /* MTTypes.h */,
+				0ACCE60918B03FEFE72D00A5 /* ofxMultiTouchPad.cpp */,
+				01E9C77AA1EAB33607F5D72E /* ofxMultiTouchPad.h */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
 		E4B69B4A0A3A1720003C02F2 = {
 			isa = PBXGroup;
 			children = (
+				79E0AA471D8B209D00A95BB5 /* MultitouchSupport.framework */,
 				E4B6FCAD0C3E899E008CF71C /* openFrameworks-Info.plist */,
 				E4EB6923138AFD0F00A09F29 /* Project.xcconfig */,
 				E4B69E1C0A3A1BDC003C02F2 /* src */,
@@ -108,10 +138,12 @@
 		E4B69E1C0A3A1BDC003C02F2 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				7916292E1D89CE7A00C2A1D1 /* loop_manager.cpp */,
-				7916292F1D89CE7A00C2A1D1 /* loop_manager.h */,
-				791629301D89CE7A00C2A1D1 /* loop.cpp */,
-				791629311D89CE7A00C2A1D1 /* loop.h */,
+				79A024CE1D8B217500B276FA /* loop_manager.cpp */,
+				79A024CF1D8B217500B276FA /* loop_manager.h */,
+				7909A2921D8B226800DD6C63 /* interface.cpp */,
+				7909A2931D8B226800DD6C63 /* interface.h */,
+				79A024D01D8B217500B276FA /* loop.cpp */,
+				79A024D11D8B217500B276FA /* loop.h */,
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
@@ -216,9 +248,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
+				79A024D21D8B217500B276FA /* loop_manager.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
-				791629321D89CE7A00C2A1D1 /* loop_manager.cpp in Sources */,
-				791629331D89CE7A00C2A1D1 /* loop.cpp in Sources */,
+				79A024D31D8B217500B276FA /* loop.cpp in Sources */,
+				5F3B4248B2408B902271BD02 /* ofxMultiTouchPad.cpp in Sources */,
+				7909A2941D8B226800DD6C63 /* interface.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -252,6 +286,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = NO;
 				GCC_WARN_UNUSED_VALUE = NO;
 				GCC_WARN_UNUSED_VARIABLE = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(OF_CORE_HEADERS)",
+					../../addons/ofxMultiTouchPad/src,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = (
@@ -282,6 +320,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = NO;
 				GCC_WARN_UNUSED_VALUE = NO;
 				GCC_WARN_UNUSED_VARIABLE = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(OF_CORE_HEADERS)",
+					../../addons/ofxMultiTouchPad/src,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_CPLUSPLUSFLAGS = (
 					"-D__MACOSX_CORE__",
@@ -300,11 +342,18 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks",
+					"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks/MultitouchSupport.framework",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../libs/glut/lib/osx\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = NONE;
+				HEADER_SEARCH_PATHS = (
+					"$(OF_CORE_HEADERS)",
+					../../addons/ofxMultiTouchPad/src,
+					"$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h",
+				);
 				ICON = "$(ICON_NAME_DEBUG)";
 				ICON_FILE = "$(ICON_FILE_PATH)$(ICON)";
 				INFOPLIST_FILE = "openFrameworks-Info.plist";
@@ -324,10 +373,17 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks",
+					"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks/MultitouchSupport.framework",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../libs/glut/lib/osx\"";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = NONE;
+				HEADER_SEARCH_PATHS = (
+					"$(OF_CORE_HEADERS)",
+					../../addons/ofxMultiTouchPad/src,
+					"$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h",
+				);
 				ICON = "$(ICON_NAME_RELEASE)";
 				ICON_FILE = "$(ICON_FILE_PATH)$(ICON)";
 				INFOPLIST_FILE = "openFrameworks-Info.plist";

@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "loop_manager.h"
+#include "interface.h"
 
 //#include "ofxOsc.h"
 
@@ -66,6 +67,7 @@ class ofApp : public ofBaseApp{
     //old looper variables
     private:
         Loop_Manager lm;
+        Interface inter;
     
         //int				mouseX, mouseY;
         //string			mouseButtonState;
