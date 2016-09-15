@@ -1,16 +1,24 @@
-#include "interface.h"
+#include "input_interface.h"
 
-Interface::Interface()
+Input_Interface::Input_Interface()
 {
     pad = ofxMultiTouchPad();
+    set_debug(false);
 }
 
-Interface::~Interface()
+Input_Interface::Input_Interface(bool debug)
+{
+    Input_Interface();
+    set_debug(debug);
+}
+
+Input_Interface::~Input_Interface()
 {
     
 }
 
-void Interface::draw() {
+//@TODO - update the visuals
+void Input_Interface::draw() {
     ofSetColor(255, 128, 0);
     std::vector<MTouch> mTouches = pad.getTouches();
     float scale = 100;
@@ -38,8 +46,15 @@ void Interface::draw() {
     }
     ofPopMatrix();
     
-    
-    // Print some Debug Info
-    string info = "Number of touches: "+ofToString(pad.getTouchCount(),0);
-    ofDrawBitmapString(info, ofPoint(0, 20));
+    //debugging
+    if (debug) {
+        string info = "NUMBER OF TOUCHES: "+ofToString(pad.getTouchCount(),0);
+        ofSetColor(200);
+        ofDrawBitmapString(info, ofPoint(20, 50));
+    }
+}
+
+void Input_Interface::set_debug(bool debug)
+{
+    this->debug=debug;
 }

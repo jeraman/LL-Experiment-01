@@ -2,7 +2,8 @@
 
 #include "ofMain.h"
 #include "loop_manager.h"
-#include "interface.h"
+#include "input_interface.h"
+#include "gui.h"
 
 //#include "ofxOsc.h"
 
@@ -33,11 +34,7 @@ class ofApp : public ofBaseApp{
 		void audioIn(float * input, int bufferSize, int nChannels);
         void audioOut(float * input, int bufferSize, int nChannels);
 
-    
-        void drawFirstLoop();
-        void drawHead();
-        void drawBackground();
-        void drawMic();
+        void set_debug(bool);
     
     //audio in variables
 		vector <float> left;
@@ -67,7 +64,8 @@ class ofApp : public ofBaseApp{
     //old looper variables
     private:
         Loop_Manager lm;
-        Interface inter;
+        Input_Interface inter;
+        Gui gui;
     
         //int				mouseX, mouseY;
         //string			mouseButtonState;

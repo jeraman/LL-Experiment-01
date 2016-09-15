@@ -39,109 +39,6 @@ void ofApp::setup(){
 }
 
 
-void ofApp::drawFirstLoop()
-{
-    //getting the first loop if available
-    Loop* first = lm.get_loop(' ');
-    
-    //checks if there is first. continues to execute if there is
-    if (first == nullptr) {
-        return;
-    }
-        
-    //start drawing first waveform
-    ofSetColor(30);
-    ofSetLineWidth(4);
-    
-    float posy = ofGetHeight()/2.0;
-    
-    int loopsize = first->sample.size();
-    
-    //iterates over the screenpixels
-    for (unsigned int i = 0; i < ofGetWidth(); i++){
-        //gets the correspond position of the index of the loop and the screen width
-        //float posx = ofMap(i, 0, loopsize, 0, ofGetWidth());
-        
-        //mapping the screen width to the position in the array
-        int convWidthToSamples = (int)((i/(float)ofGetWidth())*loopsize);
-        
-        //drawing the corresponding rectangle
-        //float sizey = ofMap(first->sample[convWidthToSamples], -1, 1, -posy, posy);
-        float sizey = 4*ofMap(abs(first->sample[convWidthToSamples]), -1, 1, -posy, posy);
-        
-        ofDrawRectangle(i,posy,1,sizey);
-        ofDrawRectangle(i,posy,1,-sizey);
-
-    }
-    
-    if (debug) {
-        float beg  = first->sample[0];
-        float end  = first->sample[loopsize-1];
-    }
-}
-
-void ofApp::drawHead() {
-    
-    //getting the first loop if available
-    Loop* first = lm.get_loop(' ');
-    
-    //checks if there is first. continues to execute if there is
-    if (first == nullptr)
-        return;
-    
-    //stores the loop size
-    int loopsize = first->sample.size();
-    
-    //start drawing first waveform
-    ofSetColor(100);
-    ofSetLineWidth(20);
-    
-    //gets the correspond position of the index of the loop and the screen width
-    float posx = ofMap(first->outpos, 0, loopsize, 0, ofGetWidth());
-    //computing the y size of each rectangle
-    
-    ofDrawLine(posx,0,posx,ofGetHeight());
-
-}
-
-
-void ofApp::drawBackground() {
-    ofBackground(255, 150);
-    
-    if (lm.is_recording()) { //if it's recording
-        ofBackground(255, 100, 100, 150);
-    }
-    
-    inter.draw();
-    
-}
-
-// draw the left channel:
-void ofApp::drawMic() {
-
-    ofPushStyle();
-    ofPushMatrix();
-    
-    ofSetColor(200, 0, 0);
-    ofSetLineWidth(3);
-    
-    ofBeginShape();
-    
-    for (unsigned int i = 0; i < leftMic.size(); i++){
-        float average=(leftMic[i]+rightMic[i])/2;
-        float xpos= ((i/(float)leftMic.size())*ofGetWidth());
-        float ypos=((ofGetHeight()/2) - average*1000.0f);
-        
-        ofVertex(xpos, ypos);
-    }
-    ofEndShape(false);
-    
-    ofPopMatrix();
-    ofPopStyle();
-}
-
-
-
 //--------------------------------------------------------------
 void ofApp::update(){
     /*
@@ -158,6 +55,7 @@ void ofApp::update(){
 		volHistory.erase(volHistory.begin(), volHistory.begin()+1);
 	}
     ///end of WHY THAT?
+     */
     
     /*
     if (isMouseClicked) {
@@ -170,18 +68,13 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+    //getting the necessary data
+    Loop* first       = lm.get_loop(' ');
+    bool is_recording = lm.is_recording();
     
-    drawBackground();
+    gui.draw(leftMic, rightMic, first, is_recording);
+    inter.draw();
     
-    if (debug) {
-        ofSetColor(200);
-        string fps("FPS: ");
-        ofDrawBitmapString(fps + ofToString(ofGetFrameRate()), 20, 20);
-    }
-    
-    drawFirstLoop();
-    drawHead();
-    drawMic();
 }
 
 //--------------------------------------------------------------
@@ -211,7 +104,7 @@ void ofApp::keyPressed  (int key){
 
     //disabling debug condition
     if (key=='d' || key=='D')
-        debug=!debug;
+        this->set_debug(!debug);
     
     if (key==' ') {
         Loop* l = lm.get_loop(' ');
@@ -235,6 +128,13 @@ void ofApp::keyPressed  (int key){
     cout << key <<endl;
 }
 
+
+void ofApp::set_debug(bool debug)
+{
+    this->debug=debug;
+    gui.set_debug(debug);
+    inter.set_debug(debug);
+}
 
 
 //--------------------------------------------------------------
