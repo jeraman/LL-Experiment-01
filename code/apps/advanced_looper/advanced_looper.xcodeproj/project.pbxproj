@@ -91,6 +91,7 @@
 		6948EE371B920CB800B5AC1A /* local_addons */ = {
 			isa = PBXGroup;
 			children = (
+				E4B69B5B0A3A1756003C02F2 /* advanced_looperDebug.app */,
 			);
 			name = local_addons;
 			sourceTree = "<group>";
@@ -131,7 +132,6 @@
 				E4EEC9E9138DF44700A80321 /* openFrameworks */,
 				BB4B014C10F69532006C3DED /* addons */,
 				6948EE371B920CB800B5AC1A /* local_addons */,
-				E4B69B5B0A3A1756003C02F2 /* advanced_looperDebug.app */,
 			);
 			sourceTree = "<group>";
 		};

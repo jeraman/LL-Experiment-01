@@ -12,6 +12,8 @@
 Gui::Gui()
 {
     debug=false;
+    head_offset = 0;
+    scale = 1;
 }
 
 Gui::Gui(bool debug)
@@ -76,6 +78,7 @@ void Gui::drawFirstLoop(Loop* first)
         //drawing the corresponding rectangle
         //float sizey = ofMap(first->sample[convWidthToSamples], -1, 1, -posy, posy);
         float sizey = 4*ofMap(abs(first->sample[convWidthToSamples]), -1, 1, -posy, posy);
+        sizey = sizey*scale;
         
         ofDrawRectangle(i,posy,1,sizey);
         ofDrawRectangle(i,posy,1,-sizey);
@@ -106,7 +109,7 @@ void Gui::drawHead(Loop* first) {
     ofSetLineWidth(20);
     
     //gets the correspond position of the index of the loop and the screen width
-    float posx = ofMap(first->outpos, 0, loopsize, 0, ofGetWidth());
+    float posx = ofMap(first->outpos+head_offset, 0, loopsize, 0, ofGetWidth());
     //computing the y size of each rectangle
     
     ofDrawLine(posx,0,posx,ofGetHeight());
@@ -143,4 +146,19 @@ void Gui::drawMic(vector<float> & leftMic, vector<float> & rightMic) {
 void Gui::set_debug(bool debug)
 {
     this->debug=debug;
+}
+
+void Gui::set_head_offset (int head_offset)
+{
+    this->head_offset=head_offset;
+}
+
+int Gui::get_head_offset ()
+{
+    return this->head_offset;
+}
+
+void Gui::set_scale (float scale)
+{
+    this->scale=scale;
 }

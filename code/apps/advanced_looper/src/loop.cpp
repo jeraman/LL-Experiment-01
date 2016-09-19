@@ -62,7 +62,7 @@ void Loop::resume()
 void Loop::overdub()
 {
     if (overdubbing) //if the system will stop overdubing now
-        update_output_buffer(0, input_buf.size(), false); //updates output without interpolation
+        update_output_buffer(false); //updates output without interpolation
     
     overdubbing = !overdubbing;
 }
@@ -116,7 +116,7 @@ void Loop::record()
         sample=input_buf;
         
         //updates the output buffer with interpolation
-        update_output_buffer(0, input_buf.size(), true);
+        update_output_buffer(true);
         
         if (debug)
             cout << " loop created! size: " << sample.size() << " time: "<< time << endl;
@@ -164,8 +164,8 @@ void Loop::overdub_sample_vector(float* &input)
     for(int i=0; i<bufferSize; i++) {
         int   index = i*nChannels;
         
-        sample[outpos + index]      += input[index  ] * volume * leftpan;
-        sample[outpos + index + 1 ] += input[index +1 ] * volume * rightpan;
+        sample[outpos + index]      += input[index  ] *  leftpan;
+        sample[outpos + index + 1 ] += input[index +1 ] * rightpan;
         
     }
 }
@@ -205,6 +205,13 @@ void Loop::update_output_buffer(int begin, int end, bool needs_interpolate)
     
     if (debug)
         cout << "updating the output buffer! new beg: " << begin << " new end: " << end << endl;
+    
+}
+
+//we can do it faster, read the whole storage and add it to the output
+void Loop::update_output_buffer(bool needs_interpolate)
+{
+    update_output_buffer(0, sample.size(), needs_interpolate);
     
 }
 
@@ -277,4 +284,9 @@ void Loop::clear()
 void Loop::set_debug(bool debug)
 {
     this->debug=debug;
+}
+
+void Loop::set_volume(float volume)
+{
+    this->volume=volume;
 }

@@ -5,11 +5,6 @@
 #include "input_interface.h"
 #include "gui.h"
 
-//#include "loop_manager.h"
-//#include "ofxOsc.h"
-// listen on port 12345
-//#define PORT            12345
-//#define NUM_MSG_STRINGS 20
 
 class ofApp : public ofBaseApp{
 	
@@ -18,6 +13,12 @@ class ofApp : public ofBaseApp{
 		void setup();
 		void update();
 		void draw();
+    
+        void update_NONE(bool);
+        void update_ONE_FINGER(bool);
+        void update_TWO_FINGERS(bool);
+        void update_THREE_FINGERS(bool);
+        void update_FOUR_FINGERS(bool);
 		
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -30,45 +31,27 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-				
+    
 		void audioIn(float * input, int bufferSize, int nChannels);
         void audioOut(float * input, int bufferSize, int nChannels);
 
         void set_debug(bool);
     
-    //audio in variables
-		vector <float> left;
-		vector <float> right;
-		vector <float> volHistory;
-		
-		int 	bufferCounter;
-		int 	drawCounter;
-		
-		float smoothedVol;
-		float scaledVol;
-		
-		ofSoundStream soundStream;
-    
-    //audio out variables
-        float 	pan;
-        int		sampleRate;
-        bool 	bNoise;
-        float 	volume;
-        
-        vector <float> leftMic;
-        vector <float> rightMic;
-    
-    //debug variables
-        bool    debug;
-    
-    //old looper variables
     private:
-        //Loop_Manager lm;
         Loop loop;
-    
         Input_Interface inter;
         Gui gui;
     
-        //int				mouseX, mouseY;
-        //string			mouseButtonState;
+        State state, last_state;
+        vector<Touch> fingers;
+    
+        vector <float> leftMic;
+        vector <float> rightMic;
+        ofSoundStream soundStream;
+    
+        float 	pan;
+        int		sampleRate;
+        float 	volume;
+        bool    debug;
+    
 };

@@ -7,27 +7,25 @@ bool isMouseClicked = false;
 void ofApp::setup(){	 
 	
 	ofSetVerticalSync(true);
-	   
-    //setting the debug var
-    debug = true;
     
     //initializing the loop
     loop.setup();
     
-    //debug which devices are available in this machine
-    if (debug)
-        soundStream.printDeviceList();
-	
-	left.assign(BUFFER_SIZE, 0.0);
-	right.assign(BUFFER_SIZE, 0.0);
+    //initi the debug
+    this->set_debug(false);
+    
+    //left.assign(BUFFER_SIZE, 0.0);
+	//right.assign(BUFFER_SIZE, 0.0);
     
     leftMic.assign(BUFFER_SIZE, 0.0);
     rightMic.assign(BUFFER_SIZE, 0.0);
 	
-    //volHistory.assign(400, 0.0);
-	
+    //debug which devices are available in this machine
+    if (debug)
+        soundStream.printDeviceList();
+        
     //sets up the input and output interfaces
-	soundStream.setup(this, N_CHANNELS, N_CHANNELS, SAMPLE_RATE, BUFFER_SIZE, 4);
+    soundStream.setup(this, N_CHANNELS, N_CHANNELS, SAMPLE_RATE, BUFFER_SIZE, 4);
     
     //freezing the framerate
     ofSetFrameRate(60);
@@ -35,46 +33,169 @@ void ofApp::setup(){
     //debug: end of setup function
     if (debug)
         cout << "setuped!" <<endl;
-
+    
+    //initializes the first state
+    state = inter.get_state();
+    //initializes the last state
+    last_state = state;
 }
 
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    /*
-    //////////////////////////////////
-    ///WHY THAT?????
-   	//lets scale the vol up to a 0-1 range
-	scaledVol = ofMap(smoothedVol, 0.0, 0.17, 0.0, 1.0, true);
-
-	//lets record the volume into an array
-	volHistory.push_back( scaledVol );
-	
-	//if we are bigger the the size we want to record - lets drop the oldest value
-	if( volHistory.size() >= 400 ){
-		volHistory.erase(volHistory.begin(), volHistory.begin()+1);
-	}
-    ///end of WHY THAT?
-     */
     
-    /*
-    if (isMouseClicked) {
-        float newHead = ofMap(mouseX, 0, ofGetWidth(), 0, 1);
-        lm.set_head(' ', newHead);
+    //if there are no loops, don't even bother processing the rest
+    if (loop.is_empty())
+        return;
+    
+    //gets the input_interface current state
+    state = inter.get_state();
+    fingers = inter.get_fingers();
+    
+    //verifies if this is the first time the current state is accessed
+    bool is_first_time_state_is_accessed = (last_state != state);
+    
+    //case-by-case analysis
+    switch(state) {
+        case NONE: //no fingers in the screen
+            update_NONE(is_first_time_state_is_accessed);
+            break;
+        case ONE_FINGER: //one finger in the screen
+            update_ONE_FINGER(is_first_time_state_is_accessed);
+            break;
+        case TWO_FINGERS: //two fingers in the screen
+            update_TWO_FINGERS(is_first_time_state_is_accessed);
+            break;
+        case THREE_FINGERS: //three fingers in the screen
+            update_THREE_FINGERS(is_first_time_state_is_accessed);
+            break;
+        case FOUR_FINGERS: //four fingers in the screen
+            update_FOUR_FINGERS(is_first_time_state_is_accessed);
+            break;
     }
-     */
-        
+    
+    //updates last state
+    last_state = state;
 }
 
 //--------------------------------------------------------------
+void ofApp::update_NONE(bool is_first_time_state_is_accessed)
+{
+    if (is_first_time_state_is_accessed) {
+        //updates output with interpolation
+        loop.update_output_buffer(true);
+       
+        //@TODO FIX PROBLEM WHERE LOOPS RESTARTS AFTER RELEASING ONE FINGER
+        //gets where the xfinger was
+        //int old_head = gui.get_head_offset();
+        
+        //makes it a multitple of bufferSize
+        //int rest = old_head%BUFFER_SIZE;
+        //old_head += rest;
+        
+        //updates the loop head to where the finger was
+        //loop.set_head(old_head);
+        
+        //sets the gui headoffset to zero
+        gui.set_head_offset(0);
+    }
+    
+    if (debug)
+        cout << "update_NONE!" << endl;
+}
+
+
+//--------------------------------------------------------------
+void ofApp::update_ONE_FINGER(bool is_first_time_state_is_accessed)
+{
+    Touch f1 = fingers[0];
+    
+    //computing the position in the sound
+    float newx = f1.x*loop.get_size();
+    
+    //computing value for the volume
+    float newy = 1-f1.y;
+    
+    //computs the range from newx
+    float range = 10*BUFFER_SIZE;
+    
+    //updates newx in case it's too close to the beginning
+    if (newx <= range)
+        newx = range+1;
+    
+    //updates newx in case it's too close to the end
+    if (newx >= loop.get_size()-range)
+        newx = loop.get_size()-range-1;
+    
+    loop.update_output_buffer(newx-range, newx+range, true);
+    loop.set_volume(newy);
+    gui.set_scale(newy*2);
+    
+    gui.set_head_offset(newx);
+    
+    if (debug) {
+        cout << "update_ONE_FINGER!"<< endl;
+        cout << "           x: " << f1.x << " y: " << f1.y << endl;
+    }
+}
+
+//--------------------------------------------------------------
+void ofApp::update_TWO_FINGERS(bool is_first_time_state_is_accessed)
+{
+    Touch f1 = fingers[0];
+    Touch f2 = fingers[1];
+    
+    if (debug) {
+        cout << "update_TWO_FINGERS!"<< endl;
+        cout << "           x: " << f1.x << " y: " << f1.y << endl;
+        cout << "           x: " << f2.x << " y: " << f2.y << endl;
+    }
+}
+
+//--------------------------------------------------------------
+void ofApp::update_THREE_FINGERS(bool is_first_time_state_is_accessed)
+{
+    Touch f1 = fingers[0];
+    Touch f2 = fingers[1];
+    Touch f3 = fingers[2];
+    
+    if (debug) {
+        cout << "update_THREE_FINGERS!"<< endl;
+        cout << "           x: " << f1.x << " y: " << f1.y << endl;
+        cout << "           x: " << f2.x << " y: " << f2.y << endl;
+        cout << "           x: " << f3.x << " y: " << f3.y << endl;
+    }
+}
+
+//--------------------------------------------------------------
+void ofApp::update_FOUR_FINGERS(bool is_first_time_state_is_accessed)
+{
+    Touch f1 = fingers[0];
+    Touch f2 = fingers[1];
+    Touch f3 = fingers[2];
+    Touch f4 = fingers[3];
+    
+    if (debug) {
+        cout << "update_FOUR_FINGERS!"<< endl;
+        cout << "           x: " << f1.x << " y: " << f1.y << endl;
+        cout << "           x: " << f2.x << " y: " << f2.y << endl;
+        cout << "           x: " << f3.x << " y: " << f3.y << endl;
+        cout << "           x: " << f4.x << " y: " << f4.y << endl;
+    }
+}
+
+
+//--------------------------------------------------------------
 void ofApp::draw(){
-    //getting the necessary data
-    //Loop* first       = lm.get_loop(' ');
-    //bool is_recording = lm.is_recording();
-    //gui.draw(leftMic, rightMic, first, is_recording);
     
     gui.draw(leftMic, rightMic, &loop);
     inter.draw();
+    
+    if (debug) {
+        string info = "CURRENT STATE: " + ofToString(inter.get_state(),0);
+        ofSetColor(200);
+        ofDrawBitmapString(info, ofPoint(20, 70));
+    }
     
 }
 

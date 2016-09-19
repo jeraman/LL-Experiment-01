@@ -27,9 +27,11 @@ class Loop
         void record ();                               //records and stops recording a loop
         void stop ();                                 //stops this sample
         void resume ();                               //resumes the sample if stopped
-        void clear ();
+        void clear ();                                //cleans the loop
+        void set_volume (float);                      //sets the volume
         void set_debug (bool);                        //debug control
         void set_head (float);                        //sets the loop head position (between 0 and 1)
+        void update_output_buffer (bool);             //updates the output buffer
         void update_output_buffer (int, int, bool);   //updates the output buffer
     
         vector<float> interpolating_beg_and_end (vector<float> &newoutput);            //interpolates the begning and the and of an audio sample in order to avoid glitch
