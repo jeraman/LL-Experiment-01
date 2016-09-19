@@ -1,12 +1,12 @@
 #pragma once
 
 #include "ofMain.h"
-#include "loop_manager.h"
+#include "loop.h"
 #include "input_interface.h"
 #include "gui.h"
 
+//#include "loop_manager.h"
 //#include "ofxOsc.h"
-
 // listen on port 12345
 //#define PORT            12345
 //#define NUM_MSG_STRINGS 20
@@ -63,7 +63,9 @@ class ofApp : public ofBaseApp{
     
     //old looper variables
     private:
-        Loop_Manager lm;
+        //Loop_Manager lm;
+        Loop loop;
+    
         Input_Interface inter;
         Gui gui;
     

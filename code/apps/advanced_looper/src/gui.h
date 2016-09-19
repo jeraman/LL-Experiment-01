@@ -24,7 +24,7 @@ public:
      Gui(bool);   //constructor
     ~Gui();   //desctructor
     
-    void draw(vector<float> &, vector<float> &, Loop*, bool);   //drawclass for visual feedback
+    void draw(vector<float> &, vector<float> &, Loop*);   //drawclass for visual feedback
     void drawBackground(bool);                              //draws the background
     void drawFirstLoop(Loop*);                              //draws the first loop
     void drawHead(Loop*);                                   //draws the head of the looper

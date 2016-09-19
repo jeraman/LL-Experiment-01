@@ -12,20 +12,30 @@
 class Loop
 {
     public:
-        Loop();
-        Loop(vector<float>, int, int = BUFFER_SIZE, int = N_CHANNELS, int = -1);
-        virtual ~Loop();
-
-        void play (float* &output, bool = false);     //
+         Loop();
+         Loop(vector<float>, int, int = BUFFER_SIZE, int = N_CHANNELS);
+        ~Loop();
     
+        void setup();
+    
+        void audio_input (float*&); //should be called when there's any audio input
+        void audio_output(float*&); //should be called when there's any audio output
+    
+        void play (float* &output);                   //plays the loop
         void overdub_sample_vector (float* &input);   //adds more audio info inside this loop
         void overdub();                               //sets the overdubbing boolean to true
+        void record ();                               //records and stops recording a loop
         void stop ();                                 //stops this sample
         void resume ();                               //resumes the sample if stopped
-        int  get_size();                              //gets the size of this loop
-        void set_head(float);                           //sets the head position of this loop (between 0 and 1)
+        void clear ();
+        void set_debug (bool);                         //debug control
+        void set_head (float);                         //sets the loop head position (between 0 and 1)
+        bool is_recording ();                          //returns if it's recording or not
+        bool is_empty ();                              // if this loop is clear/empty or not
+        int  get_size ();                              //gets the size of this loop
     
     
+            
         void update_buffer(vector<float>, int); //replaces the content of this loop
 
         int outpos;           //a agulha do vinil (para este loop)
@@ -33,17 +43,22 @@ class Loop
         int nChannels;        //número de canais do loop
         int inipos;           //posição inicial com relação ao main
 
-
-        int id; //id do botao correspondente
+        int  start_time;     //how many seconds have passed
+        int  temp_inipos;    //stores the temp inipos!  
         bool muted;           //to mute the loop
         bool overdubbing;      //indicates if this loop is currently overdubbing or not
+        bool recording;
+        bool playing;
+        bool debug;
 
         //variaveis não utilizadas
         float volume;
         float leftpan;
         float rightpan;
         float fade;
-
+    
+        vector<float> input_buf;        //stores the loop being currently recorded
+        vector<float> output_buf;       //stores the loop that is being played
 
     //private:
         vector<float> sample; //guarda os dados sonoros

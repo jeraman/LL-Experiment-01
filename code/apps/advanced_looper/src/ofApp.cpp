@@ -7,13 +7,13 @@ bool isMouseClicked = false;
 void ofApp::setup(){	 
 	
 	ofSetVerticalSync(true);
-	
-    //ofSetCircleResolution(80);
-	//ofBackground(54, 54, 54);
-    
+	   
     //setting the debug var
     debug = true;
-	
+    
+    //initializing the loop
+    loop.setup();
+    
     //debug which devices are available in this machine
     if (debug)
         soundStream.printDeviceList();
@@ -69,17 +69,18 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     //getting the necessary data
-    Loop* first       = lm.get_loop(' ');
-    bool is_recording = lm.is_recording();
+    //Loop* first       = lm.get_loop(' ');
+    //bool is_recording = lm.is_recording();
+    //gui.draw(leftMic, rightMic, first, is_recording);
     
-    gui.draw(leftMic, rightMic, first, is_recording);
+    gui.draw(leftMic, rightMic, &loop);
     inter.draw();
     
 }
 
 //--------------------------------------------------------------
 void ofApp::audioIn(float * input, int bufferSize, int nChannels){
-    lm.audio_input(input, bufferSize, nChannels);
+    loop.audio_input(input);
     
     //lets go through each sample and calculate the root mean square which is a rough way to calculate volume
     for (int i = 0; i < bufferSize; i++){
@@ -92,9 +93,7 @@ void ofApp::audioIn(float * input, int bufferSize, int nChannels){
 
 //--------------------------------------------------------------
 void ofApp::audioOut(float * output, int bufferSize, int nChannels){
-    
-    
-    lm.audio_output(output, bufferSize, nChannels);
+    loop.audio_output(output);
 }
 
 
@@ -107,25 +106,25 @@ void ofApp::keyPressed  (int key){
         this->set_debug(!debug);
     
     if (key==' ') {
-        Loop* l = lm.get_loop(' ');
-        if (l==nullptr)
-            lm.record(' ');
+        if (loop.is_empty())
+            loop.record();
         else
-            lm.overdub(' ');
+            loop.overdub();
     }
     
     if (key=='-')
-        lm.kill_all();
+        loop.clear();
     
     if (key=='p' || key=='P') {
         paused = !paused;
         if (paused)
-            lm.stop(' ');
+            loop.stop();
         else
-            lm.play(' ');
+            loop.resume();
     }
     
-    cout << key <<endl;
+    if (debug)
+        cout << key <<endl;
 }
 
 
@@ -134,6 +133,7 @@ void ofApp::set_debug(bool debug)
     this->debug=debug;
     gui.set_debug(debug);
     inter.set_debug(debug);
+    loop.set_debug(debug);
 }
 
 

@@ -25,9 +25,9 @@ Gui::~Gui()
 }
 
 //@TODO - update the visuals
-void Gui::draw(vector<float>& leftMic, vector<float>& rightMic, Loop* first, bool is_recording) {
+void Gui::draw(vector<float>& leftMic, vector<float>& rightMic, Loop* first) {
     
-    drawBackground(is_recording);
+    drawBackground(first->is_recording());
     drawFirstLoop(first);
     drawHead(first);
     drawMic(leftMic, rightMic);
@@ -53,7 +53,7 @@ void Gui::drawBackground(bool is_recording) {
 void Gui::drawFirstLoop(Loop* first)
 {
     //checks if there is first. continues to execute if there is
-    if (first == nullptr) {
+    if (first->is_empty()) {
         return;
     }
     
