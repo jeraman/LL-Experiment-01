@@ -61,6 +61,9 @@ void Loop::resume()
 
 void Loop::overdub()
 {
+    if (overdubbing) //if the system will stop overdubing now
+        update_output_buffer(0, input_buf.size(), false); //updates output without interpolation
+    
     overdubbing = !overdubbing;
 }
 
@@ -79,11 +82,11 @@ void Loop::play(float* &output)
         for(int i=0; i<bufferSize; i++) {
             int   index = i*nChannels;
             
-            output[index  ] += sample[outpos + index] * volume * leftpan;
-            output[index+1] += sample[outpos + index] * volume * rightpan;
+            output[index  ] += output_buf[outpos + index] * volume * leftpan;
+            output[index+1] += output_buf[outpos + index] * volume * rightpan;
         }
     
-        outpos = ((outpos + bufferSize*2)%(sample.size()));
+        outpos = ((outpos + bufferSize*2)%(output_buf.size()));
 
     }
 }
@@ -111,6 +114,9 @@ void Loop::record()
         //interpolating_beg_and_end();
             
         sample=input_buf;
+        
+        //updates the output buffer with interpolation
+        update_output_buffer(0, input_buf.size(), true);
         
         if (debug)
             cout << " loop created! size: " << sample.size() << " time: "<< time << endl;
@@ -177,13 +183,65 @@ void Loop::set_head(float position)
     outpos=newHead;
 }
 
-
-void Loop::update_buffer(vector<float> b, int ip)
+//////////////////////////////////
+//updates the output buffer, performing as well the required interpolation
+// - begin - init position from the sample vector
+// - end   - end position from the sample vector
+//////////////////////////////////
+void Loop::update_output_buffer(int begin, int end, bool needs_interpolate)
 {
-    //inicializando as variáveis
-    sample = b;
-    inipos = ip;
+    vector<float>::const_iterator first = sample.begin() + begin;
+    vector<float>::const_iterator last  = sample.begin() + end;
+    
+    //selecting the subarray that will become the output
+    vector<float> newoutput(first, last);
+    
+    //interpolates if needed and stores the new array in the output
+    
+    if (needs_interpolate)
+        output_buf = interpolating_beg_and_end(newoutput);
+    else
+        output_buf = newoutput;
+    
+    if (debug)
+        cout << "updating the output buffer! new beg: " << begin << " new end: " << end << endl;
+    
 }
+
+
+vector<float> Loop::interpolating_beg_and_end(vector<float> &newoutput) {
+    
+    //getting the first chunck
+    vector<float> first_chunck(newoutput.begin(), newoutput.begin() + 2*BUFFER_SIZE);
+    //getting the last chunk
+    vector<float> last_chunck(newoutput.end()-2*BUFFER_SIZE, newoutput.end());
+    
+    //overlapping the beginning
+    //iterating over the BUFFER_SIZE last samples
+    for (int a = 0; a < 2*BUFFER_SIZE; a=a+2) {
+        //computing the current weight
+        float weight     = a/(float)(BUFFER_SIZE*2);
+        float inv_weight = 1-weight;
+        
+        //interpolating between the current sample and the first one (the one we want to morph into)
+        float interpolated_value_l = (weight*first_chunck[a])   + (inv_weight*last_chunck[a]);
+        float interpolated_value_r = (weight*first_chunck[a+1]) + (inv_weight*last_chunck[a+1]);
+        
+        //updating values
+        newoutput[a  ] = interpolated_value_l;
+        newoutput[a+1] = interpolated_value_r;
+    }
+    
+    //delete the last chunk
+    newoutput.erase(newoutput.end()-(BUFFER_SIZE*2) , newoutput.end());
+    
+    return newoutput;
+    
+    //end of interpolation
+    ///////////////////////////////////////////
+}
+
+
 
 //////////////////////////////////
 // returns if it's recording or not
@@ -209,6 +267,7 @@ void Loop::clear()
 {
     this->sample.clear();
     this->input_buf.clear();
+    this->output_buf.clear();
     recording  = false;
     playing    = true;
     overdubbing = false;
