@@ -14,6 +14,7 @@ Gui::Gui()
     debug=false;
     head_offset = 0;
     scale = 1;
+    window1_start = -1, window1_end=-1;
 }
 
 Gui::Gui(bool debug)
@@ -33,6 +34,9 @@ void Gui::draw(vector<float>& leftMic, vector<float>& rightMic, Loop* first) {
     drawFirstLoop(first);
     drawHead(first);
     drawMic(leftMic, rightMic);
+    
+    if (window1_start != -1 && window1_end != -1)
+        drawWindow();
     
     if (debug) {
         ofSetColor(200);
@@ -116,7 +120,16 @@ void Gui::drawHead(Loop* first) {
     
 }
 
-
+void Gui:: drawWindow() {
+    //sets color
+    ofSetColor(150, 100);
+    
+    //drawing first overlay
+    ofDrawRectangle(0, 0, window1_start, ofGetHeight());
+    
+    //drawing second overlay
+    ofDrawRectangle(window1_end, 0, ofGetWidth()-window1_end, ofGetHeight());
+}
 
 // draw the left channel:
 void Gui::drawMic(vector<float> & leftMic, vector<float> & rightMic) {
@@ -140,6 +153,19 @@ void Gui::drawMic(vector<float> & leftMic, vector<float> & rightMic) {
     
     ofPopMatrix();
     ofPopStyle();
+}
+
+
+void Gui::set_window(int x1, int x2)
+{
+    window1_start = x1;
+    window1_end=x2;
+}
+
+void Gui::remove_window()
+{
+    window1_start = -1;
+    window1_end=-1;
 }
 
 

@@ -1,43 +1,56 @@
 #include "ofApp.h"
 
 
-bool isMouseClicked = false;
-
 //--------------------------------------------------------------
 void ofApp::setup(){	 
 	
 	ofSetVerticalSync(true);
     
-    //initializing the loop
-    loop.setup();
-    
     //initi the debug
-    this->set_debug(false);
-    
-    //left.assign(BUFFER_SIZE, 0.0);
-	//right.assign(BUFFER_SIZE, 0.0);
-    
-    leftMic.assign(BUFFER_SIZE, 0.0);
-    rightMic.assign(BUFFER_SIZE, 0.0);
-	
-    //debug which devices are available in this machine
-    if (debug)
-        soundStream.printDeviceList();
-        
-    //sets up the input and output interfaces
-    soundStream.setup(this, N_CHANNELS, N_CHANNELS, SAMPLE_RATE, BUFFER_SIZE, 4);
+    set_debug(false);
     
     //freezing the framerate
     ofSetFrameRate(60);
     
-    //debug: end of setup function
-    if (debug)
-        cout << "setuped!" <<endl;
+    //init sound
+    setup_sound();
     
     //initializes the first state
     state = inter.get_state();
+    
     //initializes the last state
     last_state = state;
+    
+    //debug: end of setup function
+    if (debug)
+        cout << "setuped!" <<endl;
+}
+
+//--------------------------------------------------------------
+void ofApp::setup_sound(){
+    
+    //initializing the loop
+    loop.setup();
+    
+    //init the buffer fmor mic monitoring
+    leftMic.assign(loop.bufferSize, 0.0);
+    rightMic.assign(loop.bufferSize, 0.0);
+    
+    //debug which devices are available in this machine
+    if (debug) {
+        soundStream.printDeviceList();
+    }
+    
+    //sets up the input and output interfaces
+    bool result = soundStream.setup(this, N_CHANNELS, N_CHANNELS, SAMPLE_RATE, BUFFER_SIZE, 4);
+    
+    if (debug) {
+        cout<< "sound setup succeded? " << result << " setup: " << endl;
+        cout<< "      N_CHANNELS:  " << N_CHANNELS << endl;
+        cout<< "      SAMPLE_RATE: " << SAMPLE_RATE << endl;
+        cout<< "      BUFFER_SIZE: " << BUFFER_SIZE << endl;
+    }
+
 }
 
 
@@ -85,23 +98,21 @@ void ofApp::update_NONE(bool is_first_time_state_is_accessed)
         //updates output with interpolation
         loop.update_output_buffer(true);
        
-        //@TODO FIX PROBLEM WHERE LOOPS RESTARTS AFTER RELEASING ONE FINGER
         //gets where the xfinger was
-        //int old_head = gui.get_head_offset();
-        
-        //makes it a multitple of bufferSize
-        //int rest = old_head%BUFFER_SIZE;
-        //old_head += rest;
+        int old_head = gui.get_head_offset();
         
         //updates the loop head to where the finger was
-        //loop.set_head(old_head);
+        loop.set_head_absolute(old_head+loop.outpos);
         
         //sets the gui headoffset to zero
         gui.set_head_offset(0);
+        
+        //removes any window the gui might have
+        gui.remove_window();
     }
     
-    if (debug)
-        cout << "update_NONE!" << endl;
+    //if (debug)
+    //    cout << "update_NONE!" << endl;
 }
 
 
@@ -114,29 +125,62 @@ void ofApp::update_ONE_FINGER(bool is_first_time_state_is_accessed)
     float newx = f1.x*loop.get_size();
     
     //computing value for the volume
-    float newy = 1-f1.y;
+    float newy = (1-f1.y)*2;
+    
+    /* new - simpler */
+    
+    //new attempt
+    loop.set_head_absolute(newx);
+    
+    //sets the new volume
+    loop.set_volume(newy);
+    
+    //updates the drawing scale for the waveform
+    gui.set_scale(newy);
+
+    
+    /* old - more complex
     
     //computs the range from newx
-    float range = 10*BUFFER_SIZE;
+    float range = 6*loop.bufferSize;
     
-    //updates newx in case it's too close to the beginning
+    //updates newx in case it's too close to the beginning. +2 because it needs to be even
     if (newx <= range)
-        newx = range+1;
+        newx = range+2;
     
     //updates newx in case it's too close to the end
     if (newx >= loop.get_size()-range)
-        newx = loop.get_size()-range-1;
+        newx = loop.get_size()-range-2;
     
-    loop.update_output_buffer(newx-range, newx+range, true);
+    //sets the new volume
     loop.set_volume(newy);
-    gui.set_scale(newy*2);
     
+    //updates the drawing scale for the waveform
+    gui.set_scale(newy);
+    
+    //moves the head to the new position
     gui.set_head_offset(newx);
     
-    if (debug) {
-        cout << "update_ONE_FINGER!"<< endl;
-        cout << "           x: " << f1.x << " y: " << f1.y << endl;
-    }
+    
+    //updates the output looper
+    loop.update_output_buffer(newx-range, newx+range, true);
+    
+    //if this is the first time
+    if (is_first_time_state_is_accessed)
+     
+        //sets the head to zero
+        loop.set_head_absolute(0);
+    */
+     
+    //removes any possible window
+    gui.remove_window();
+    
+    //if (debug) {
+    //    cout << "update_ONE_FINGER!"<< endl;
+    //    cout << "           x: " << f1.x << " y: " << f1.y << endl;
+    //}
+    
+    
 }
 
 //--------------------------------------------------------------
@@ -144,6 +188,51 @@ void ofApp::update_TWO_FINGERS(bool is_first_time_state_is_accessed)
 {
     Touch f1 = fingers[0];
     Touch f2 = fingers[1];
+    
+    //computing the position in the sound
+    int newf1x = f1.x*loop.get_size();
+    int newf2x = f2.x*loop.get_size();
+    
+    float newy = (1-((f1.y+f2.y)/2))*2;
+    
+    //organizes each one should go first and updates the output buffer
+    if (newf2x >newf1x) {
+        
+        //updates the loop position
+        loop.update_output_buffer(newf1x, newf2x, true);
+        
+        //sets the window
+        gui.set_window(f1.x*ofGetWidth(), f2.x*ofGetWidth());
+        
+        //updates the loop position
+        gui.set_head_offset(newf1x);
+        
+    } else {
+        
+        //updates the loop position
+        loop.update_output_buffer(newf2x, newf1x, true);
+        
+        //sets the window
+        gui.set_window(f2.x*ofGetWidth(), f1.x*ofGetWidth());
+        
+        //updates the head of the gui
+        gui.set_head_offset(newf2x);
+    }
+    
+    //if this is the first time
+    if (is_first_time_state_is_accessed) {
+        
+        //sets the head to zero
+        loop.set_head_absolute(0);
+    }
+    
+    //sets the volue
+    loop.set_volume(newy);
+    
+    //sets the scale
+    gui.set_scale(newy);
+    
+    //organizes each one should go first and updates the head of the gui
     
     if (debug) {
         cout << "update_TWO_FINGERS!"<< endl;
@@ -158,6 +247,8 @@ void ofApp::update_THREE_FINGERS(bool is_first_time_state_is_accessed)
     Touch f1 = fingers[0];
     Touch f2 = fingers[1];
     Touch f3 = fingers[2];
+    
+    gui.remove_window();
     
     if (debug) {
         cout << "update_THREE_FINGERS!"<< endl;
@@ -174,6 +265,8 @@ void ofApp::update_FOUR_FINGERS(bool is_first_time_state_is_accessed)
     Touch f2 = fingers[1];
     Touch f3 = fingers[2];
     Touch f4 = fingers[3];
+    
+    gui.remove_window();
     
     if (debug) {
         cout << "update_FOUR_FINGERS!"<< endl;
@@ -203,7 +296,6 @@ void ofApp::draw(){
 void ofApp::audioIn(float * input, int bufferSize, int nChannels){
     loop.audio_input(input);
     
-    //lets go through each sample and calculate the root mean square which is a rough way to calculate volume
     for (int i = 0; i < bufferSize; i++){
         leftMic[i]	= input[i*2]*0.5;
         rightMic[i]	= input[i*2+1]*0.5;
@@ -245,7 +337,7 @@ void ofApp::keyPressed  (int key){
     }
     
     if (debug)
-        cout << key <<endl;
+        cout << "key pressed: " << key <<endl;
 }
 
 
@@ -260,7 +352,7 @@ void ofApp::set_debug(bool debug)
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-    isMouseClicked = true;
+    
 }
 
 //--------------------------------------------------------------
@@ -279,7 +371,7 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-    isMouseClicked = false;
+    
 }
 
 //--------------------------------------------------------------

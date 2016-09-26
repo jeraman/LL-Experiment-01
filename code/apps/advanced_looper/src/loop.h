@@ -30,7 +30,8 @@ class Loop
         void clear ();                                //cleans the loop
         void set_volume (float);                      //sets the volume
         void set_debug (bool);                        //debug control
-        void set_head (float);                        //sets the loop head position (between 0 and 1)
+        void set_head_normalized (float);             //sets the loop head position (between 0 and 1)
+        void set_head_absolute (int);               ///using the size of the sample
         void update_output_buffer (bool);             //updates the output buffer
         void update_output_buffer (int, int, bool);   //updates the output buffer
     

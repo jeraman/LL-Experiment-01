@@ -14,6 +14,7 @@ class ofApp : public ofBaseApp{
 		void update();
 		void draw();
     
+        void setup_sound();
         void update_NONE(bool);
         void update_ONE_FINGER(bool);
         void update_TWO_FINGERS(bool);
