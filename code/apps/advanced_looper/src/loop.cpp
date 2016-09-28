@@ -45,6 +45,12 @@ void Loop::setup() {
     leftpan = 1.f;
     rightpan = 1.f;
     
+    //init aux_looping area
+    aux_start_index = -1;
+    aux_end_index   = -1;
+    aux_outpos = -1;
+    aux_volume = 1.f;
+    
     //leaves debug as it is! do not modify it!
 }
 
@@ -86,53 +92,59 @@ void Loop::play(float* &output)
         //interates of buffersize for loading the output
         for(int i=0; i<bufferSize; i++) {
             
+            //debug only
+            if (output_buf.size() == 0) {
+                cout << "output_buf is empty" << endl;
+                return;
+            }
+            
             //computing the index
             int   index = i*nChannels;
             
             //computing the index in the output_buf
             int   output_buf_index = (outpos + index)%output_buf.size();
             
-            //debug - ERASE ME!
-            if (output_buf.size()==0) {
-                cout << "output_buf has size of 0" << endl;
-                return;
-            }
-            
-            //debug - ERASE ME!
-            if (output_buf_index > output_buf.size()) {
-                cout << "hey man! you're trying to access an area bigger then output buffer!!!" << endl;
-                cout << "      outpos: " << outpos << ";" << endl;
-                cout << "      outpos+index: " << outpos+index << ";" << endl;
-                cout << "      output_buf.size(): " << output_buf.size() << ";" << endl;
-                cout << "      index: " << index << ";" << endl;
-                break;
-            }
-            
-            //updates left channel
+            //updates left channel - main
             output[index  ] += output_buf[output_buf_index] * volume * leftpan;
             
             //in this case, we are getting the value from the right, and feeding the left channel
             //because we are using only the left channel of the focus right
             output[index+1] += output_buf[output_buf_index] * volume * rightpan;
             
-            //ideally, this should be the right code
-            //output[index+1] += output_buf[outpos + index+1] * volume * rightpan;
-            
             //in case there are more channels (eg. x channels), remember to update output[index+x]. so far, this code will only work with n channels.
+            
+            
+            //[AUX] computing the index in the output_buf
+            int   aux_output_buf_index = (aux_outpos + index)%output_buf.size();
+            
+            //if there is currentyl an aux looping area
+            if (there_is_aux_looping_area()) {
+                
+                //same as before
+                output[index  ] += output_buf[aux_output_buf_index] * aux_volume * leftpan;
+                output[index+1] += output_buf[aux_output_buf_index] * aux_volume * rightpan;
+            }
+                
         }
-        
-        //getting the old outpos before updating it
-        //old_outpos = outpos;
         
         //updating the current position
         outpos = ((outpos + (bufferSize*nChannels))%(end_index));
-        
-        //if outpos exploded this time, time to return to beginning!
-        //if ((old_outpos + (bufferSize*nChannels) > end_index))
+
         //checks if the outpos if suitable
         if (outpos < start_index || outpos > end_index)
+        
             //goes directly to the start_index
             outpos = start_index;
+        
+        //repeat the same thing if there is currentyl an aux looping area
+        if (there_is_aux_looping_area()) {
+            
+            aux_outpos = ((aux_outpos + (bufferSize*nChannels))%(aux_end_index));
+            
+            if (aux_outpos < aux_start_index || aux_outpos > aux_end_index)
+                aux_outpos = aux_start_index;
+
+        }
     }
 }
 
@@ -220,6 +232,7 @@ void Loop::set_head_normalized(float position)
     set_head_absolute(newHead);
 }
 
+
 void Loop::set_head_absolute(int position)
 {
     //if newHead is an odd number (right channel), makes it even (left channel)
@@ -279,6 +292,11 @@ void Loop::set_volume(float volume)
     this->volume=volume;
 }
 
+void Loop::set_aux_volume(float volume)
+{
+    this->aux_volume=volume;
+}
+
 
 //////////////////////////////////
 // sets the sample to fully loop from its beg to its end
@@ -306,4 +324,45 @@ void Loop::set_looping_area(int start, int end)
     
     start_index = start;
     end_index   = end;
+}
+
+
+//////////////////////////////////
+// sets the sample to loop in a second area between start and end
+//////////////////////////////////
+void Loop::set_aux_looping_area(int start, int end)
+{
+    //if start is an odd number (right channel), makes it even (left channel)
+    if (start%2 != 0)
+        start -=1;
+    
+    //if start is an even number (left channel), makes it even (right channel)
+    if (end%2 != 0)
+        end -=1;
+    
+    //setting the window
+    aux_start_index = start;
+    aux_end_index   = end;
+    
+    //the the aux head
+    //aux_outpos = start;
+}
+
+//////////////////////////////////
+// sets the sample to loop between start and end
+//////////////////////////////////
+void Loop::remove_aux_looping_area()
+{
+    //removes everything
+    aux_start_index = -1;
+    aux_end_index   = -1;
+    aux_outpos = 0;
+}
+
+//////////////////////////////////
+// returns if there is an aux looping area
+//////////////////////////////////
+bool Loop::there_is_aux_looping_area()
+{
+    return (aux_start_index !=- 1 && aux_end_index !=- 1);
 }

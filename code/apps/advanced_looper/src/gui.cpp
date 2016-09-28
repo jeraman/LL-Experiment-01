@@ -32,7 +32,9 @@ void Gui::draw(vector<float>& leftMic, vector<float>& rightMic, Loop* first) {
     drawBackground(first->is_recording());
     drawFirstLoop(first);
     drawHead(first);
+    drawAuxHead(first);
     drawMic(leftMic, rightMic);
+    
     
     if (window1_start != -1 && window1_end != -1)
         drawWindow(first->is_recording());
@@ -122,6 +124,32 @@ void Gui::drawHead(Loop* first) {
     ofDrawLine(posx,0,posx,ofGetHeight());
     
 }
+
+void Gui::drawAuxHead(Loop* first) {
+    
+    //getting the first loop if available
+    //Loop* first = lm.get_loop(' ');
+    
+    //checks if there is first. continues to execute if there is
+    if (!first->there_is_aux_looping_area())
+        return;
+    
+    //stores the loop size
+    int loopsize = first->sample.size();
+    
+    //start drawing first waveform
+    ofSetColor(100);
+    ofSetLineWidth(20);
+    
+    //gets the correspond position of the index of the loop and the screen width
+    float posx = ofMap(first->aux_outpos, 0, loopsize, 0, ofGetWidth());
+    //computing the y size of each rectangle
+    
+    ofDrawLine(posx,0,posx,ofGetHeight());
+    
+}
+
+
 
 void Gui:: drawWindow(bool is_recording) {
     //sets color

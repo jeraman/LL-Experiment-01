@@ -28,6 +28,7 @@ public:
     void drawBackground(bool);                            //draws the background
     void drawFirstLoop(Loop*);                            //draws the first loop
     void drawHead(Loop*);                                 //draws the head of the looper
+    void drawAuxHead(Loop*);                      //draws the head of the looper
     void drawMic(vector<float> &, vector<float> &);       //draws the input mic in realtime
     void drawWindow(bool);                                    //draws the window
     

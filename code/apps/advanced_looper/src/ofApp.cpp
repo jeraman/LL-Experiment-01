@@ -78,14 +78,14 @@ void ofApp::update(){
         case TWO_FINGERS: //two fingers in the screen
             update_TWO_FINGERS(is_first_time_state_is_accessed);
             break;
-        /*
         case THREE_FINGERS: //three fingers in the screen
             update_THREE_FINGERS(is_first_time_state_is_accessed);
             break;
+        /*
         case FOUR_FINGERS: //four fingers in the screen
             update_FOUR_FINGERS(is_first_time_state_is_accessed);
             break;
-         */
+        */
     }
     
     //updates last state
@@ -134,6 +134,9 @@ void ofApp::update_ONE_FINGER(bool is_first_time_state_is_accessed)
     //removes any possible window
     gui.remove_window();
     
+    //removes any loooping area
+    loop.remove_aux_looping_area();
+    
     //if (debug) {
     //    cout << "update_ONE_FINGER!"<< endl;
     //    cout << "           x: " << f1.x << " y: " << f1.y << endl;
@@ -166,6 +169,9 @@ void ofApp::update_TWO_FINGERS(bool is_first_time_state_is_accessed)
     //sets the scale
     gui.set_scale(newy);
     
+    //removes any loooping area
+    loop.remove_aux_looping_area();
+    
     //organizes each one should go first and updates the head of the gui
     
     if (debug) {
@@ -181,6 +187,38 @@ void ofApp::update_THREE_FINGERS(bool is_first_time_state_is_accessed)
     Touch f1 = fingers[0];
     Touch f2 = fingers[1];
     Touch f3 = fingers[2];
+    
+    //computing the position in the sound
+    int newf1x = f1.x*loop.get_size();
+    int newf3x = f3.x*loop.get_size();
+
+    float new13y = (1-((f1.y+f3.y)/2))*2;
+    
+    //updates the looping area
+    loop.set_looping_area(newf1x, newf3x);
+    
+    //sets the window
+    gui.set_window(f1.x*ofGetWidth(), f3.x*ofGetWidth());
+    
+    //sets the volume
+    loop.set_volume(new13y);
+    
+    //sets the scale
+    gui.set_scale(new13y);
+
+
+    /////////////////////
+    // AUX
+    int newf2x = f2.x*loop.get_size();
+    
+    //getting y position
+    float new2y = (1-f2.y)*2;
+    
+    //updates the aux looping area
+    loop.set_aux_looping_area(newf2x, newf2x + 15*loop.bufferSize);
+    
+    //sets the aux volume
+    loop.set_aux_volume(new2y);
     
     if (debug) {
         cout << "update_THREE_FINGERS!"<< endl;
@@ -198,7 +236,42 @@ void ofApp::update_FOUR_FINGERS(bool is_first_time_state_is_accessed)
     Touch f3 = fingers[2];
     Touch f4 = fingers[3];
     
-    //gui.remove_window();
+    //computing the position in the sound
+    int newf1x = f1.x*loop.get_size();
+    int newf2x = f2.x*loop.get_size();
+    
+    float newy = (1-((f1.y+f2.y)/2))*2;
+    
+    //updates the looping area
+    loop.set_looping_area(newf1x, newf2x);
+    
+    //sets the window
+    gui.set_window(f1.x*ofGetWidth(), f2.x*ofGetWidth());
+    
+    //sets the volue
+    loop.set_volume(newy);
+    
+    //sets the scale
+    gui.set_scale(newy);
+    
+    //computing the position in the sound
+    int newf3x = f3.x*loop.get_size();
+    int newf4x = f4.x*loop.get_size();
+    
+    newy = (1-((f3.y+f4.y)/2))*2;
+    
+    //updates the looping area
+    loop.set_aux_looping_area(newf3x, newf4x);
+    
+    //sets the window
+    gui.set_window(f3.x*ofGetWidth(), f4.x*ofGetWidth());
+    
+    //sets the volue
+    loop.set_aux_volume(newy);
+    
+    //sets the scale
+    gui.set_scale(newy);
+    
     
     if (debug) {
         cout << "update_FOUR_FINGERS!"<< endl;
