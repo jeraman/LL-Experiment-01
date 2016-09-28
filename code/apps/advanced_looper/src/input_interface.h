@@ -4,6 +4,7 @@
 #include "ofMain.h"
 #include "ofxMultiTouchPad.h"
 #include <vector>
+#include <algorithm>
 
 
 //state machine for the interface
@@ -30,6 +31,9 @@ public:
         this->angle = angle;
         this->size  = size;
     }
+    
+    //overloading the < operator to be used in the sorting
+    bool operator<(const Touch& t2) const { return (x < t2.x); }
 };
 
 /********************************

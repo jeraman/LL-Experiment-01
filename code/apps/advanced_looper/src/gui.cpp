@@ -12,7 +12,6 @@
 Gui::Gui()
 {
     debug=false;
-    head_offset = 0;
     scale = 1;
     window1_start = -1, window1_end=-1;
 }
@@ -36,7 +35,7 @@ void Gui::draw(vector<float>& leftMic, vector<float>& rightMic, Loop* first) {
     drawMic(leftMic, rightMic);
     
     if (window1_start != -1 && window1_end != -1)
-        drawWindow();
+        drawWindow(first->is_recording());
     
     if (debug) {
         ofSetColor(200);
@@ -47,11 +46,15 @@ void Gui::draw(vector<float>& leftMic, vector<float>& rightMic, Loop* first) {
 
 //draws the background
 void Gui::drawBackground(bool is_recording) {
+    
+    //draws the background
     ofBackground(255, 150);
     
-    if (is_recording) { //if it's recording
+    //if it's recording and there is no windows
+    if (is_recording && window1_start == -1)
+        
+        //draws the window
         ofBackground(255, 100, 100, 150);
-    }
 }
 
 
@@ -113,14 +116,14 @@ void Gui::drawHead(Loop* first) {
     ofSetLineWidth(20);
     
     //gets the correspond position of the index of the loop and the screen width
-    float posx = ofMap(first->outpos+head_offset, 0, loopsize, 0, ofGetWidth());
+    float posx = ofMap(first->outpos, 0, loopsize, 0, ofGetWidth());
     //computing the y size of each rectangle
     
     ofDrawLine(posx,0,posx,ofGetHeight());
     
 }
 
-void Gui:: drawWindow() {
+void Gui:: drawWindow(bool is_recording) {
     //sets color
     ofSetColor(150, 100);
     
@@ -129,6 +132,16 @@ void Gui:: drawWindow() {
     
     //drawing second overlay
     ofDrawRectangle(window1_end, 0, ofGetWidth()-window1_end, ofGetHeight());
+    
+    //if it's recording
+    if (is_recording){
+        
+        //sets the red color
+        ofSetColor(255, 100, 100, 150);
+            
+        //draw the recording area
+        ofDrawRectangle(window1_start, 0, window1_end-window1_start, ofGetHeight());
+    }
 }
 
 // draw the left channel:
@@ -173,7 +186,7 @@ void Gui::set_debug(bool debug)
 {
     this->debug=debug;
 }
-
+/*
 void Gui::set_head_offset (int head_offset)
 {
     this->head_offset=head_offset;
@@ -182,7 +195,7 @@ void Gui::set_head_offset (int head_offset)
 int Gui::get_head_offset ()
 {
     return this->head_offset;
-}
+}*/
 
 void Gui::set_scale (float scale)
 {

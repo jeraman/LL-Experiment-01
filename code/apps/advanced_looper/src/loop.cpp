@@ -11,10 +11,8 @@ Loop::Loop(vector<float> b, int ip, int bufsize, int nchan)
 {
     //inicializando as variáveis
     sample = b;
-    inipos = ip;
     bufferSize = bufsize;
     nChannels = nchan;
-    //muted = false;
     debug = false;
     
     setup();
@@ -29,7 +27,6 @@ void Loop::setup() {
     vector<float> new_sample;
     
     sample=new_sample;
-    inipos = 0;
     bufferSize = BUFFER_SIZE;
     nChannels = N_CHANNELS;
     
@@ -40,11 +37,13 @@ void Loop::setup() {
     //começando do início
     outpos = 0;
     
+    //setting the full loop
+    set_full_looping_area();
+    
     //inicializando as variáveis não usadas
     volume = 1.f;
     leftpan = 1.f;
     rightpan = 1.f;
-    fade = 0.7f;
     
     //leaves debug as it is! do not modify it!
 }
@@ -62,8 +61,11 @@ void Loop::resume()
 
 void Loop::overdub()
 {
-    if (overdubbing) //if the system will stop overdubing now
-        update_output_buffer(false); //updates output without interpolation
+    //if the system will stop overdubing now
+    if (overdubbing)
+        
+        //updates output without interpolation
+        update_output_buffer();
     
     overdubbing = !overdubbing;
 }
@@ -74,37 +76,63 @@ int  Loop::get_size()
     return sample.size();
 }
 
+//int old_outpos = 0;
+
 
 void Loop::play(float* &output)
 {
     if ((!is_empty()) & playing)
     {
-        if (outpos > output_buf.size())
-            cout << "hey man! output is bigger then output buffer!!!" << endl;
-        
+        //interates of buffersize for loading the output
         for(int i=0; i<bufferSize; i++) {
-
+            
             //computing the index
             int   index = i*nChannels;
             
+            //computing the index in the output_buf
+            int   output_buf_index = (outpos + index)%output_buf.size();
+            
+            //debug - ERASE ME!
             if (output_buf.size()==0) {
                 cout << "output_buf has size of 0" << endl;
                 return;
             }
             
-            output[index  ] += output_buf[(outpos + index)%output_buf.size()] * volume * leftpan;
+            //debug - ERASE ME!
+            if (output_buf_index > output_buf.size()) {
+                cout << "hey man! you're trying to access an area bigger then output buffer!!!" << endl;
+                cout << "      outpos: " << outpos << ";" << endl;
+                cout << "      outpos+index: " << outpos+index << ";" << endl;
+                cout << "      output_buf.size(): " << output_buf.size() << ";" << endl;
+                cout << "      index: " << index << ";" << endl;
+                break;
+            }
+            
+            //updates left channel
+            output[index  ] += output_buf[output_buf_index] * volume * leftpan;
+            
             //in this case, we are getting the value from the right, and feeding the left channel
             //because we are using only the left channel of the focus right
-            output[index+1] += output_buf[(outpos + index)%output_buf.size()] * volume * rightpan;
-            //this should be the right code
-            //output[index+1] += output_buf[(outpos + index+1)%output_buf.size()] * volume * rightpan;
+            output[index+1] += output_buf[output_buf_index] * volume * rightpan;
             
-            //in case there are more channels (eg. x channels), remember to update output[index+x]. so far, this code will only work with n channels. 
+            //ideally, this should be the right code
+            //output[index+1] += output_buf[outpos + index+1] * volume * rightpan;
+            
+            //in case there are more channels (eg. x channels), remember to update output[index+x]. so far, this code will only work with n channels.
         }
-    
-        outpos = ((outpos + bufferSize*nChannels)%(output_buf.size()));
         
-
+        //getting the old outpos before updating it
+        //old_outpos = outpos;
+        
+        //updating the current position
+        outpos = ((outpos + (bufferSize*nChannels))%(end_index));
+        
+        //if outpos exploded this time, time to return to beginning!
+        //if ((old_outpos + (bufferSize*nChannels) > end_index))
+        //checks if the outpos if suitable
+        if (outpos < start_index || outpos > end_index)
+            //goes directly to the start_index
+            outpos = start_index;
     }
 }
 
@@ -117,26 +145,23 @@ void Loop::record()
     if (!recording) //se não tá gravando, comece a gravar
     {
         recording = !recording;
-        start_time = ofGetElapsedTimef();
         input_buf.clear();
-        temp_inipos = 0;
     }
     
     else       //se tá gravando, finalize
     {
         recording = !recording;
-        int time = ofGetElapsedTimef() - start_time;
         
-        //interpolates
-        //interpolating_beg_and_end();
-            
         sample=input_buf;
         
-        //updates the output buffer with interpolation
-        update_output_buffer(true);
+        //updates the output buffer
+        update_output_buffer();
+        
+        //sets the loop from its begnning to its end
+        set_full_looping_area();
         
         if (debug)
-            cout << " loop created! size: " << sample.size() << " time: "<< time << endl;
+            cout << " loop created! size: " << sample.size() << endl;
     }
     
 }
@@ -181,8 +206,8 @@ void Loop::overdub_sample_vector(float* &input)
     for(int i=0; i<bufferSize; i++) {
         int   index = i*nChannels;
         
-        sample[outpos + index]      += input[index  ]   *  leftpan;
-        sample[outpos + index + 1 ] += input[index +1 ] * rightpan;
+        sample[(outpos + index)%sample.size()]     += input[index  ]   *  leftpan;
+        sample[(outpos + index + 1)%sample.size()] += input[index +1 ] * rightpan;
         
     }
 }
@@ -205,109 +230,13 @@ void Loop::set_head_absolute(int position)
     outpos=position;
 }
 
-//////////////////////////////////
-//updates the output buffer, performing as well the required interpolation
-// - begin - init position from the sample vector
-// - end   - end position from the sample vector
-//////////////////////////////////
-void Loop::update_output_buffer(int begin, int end, bool needs_interpolate)
+
+//gets the sample and sets it to the output
+void Loop::update_output_buffer()
 {
-    vector<float>::const_iterator first = sample.begin() + begin;
-    vector<float>::const_iterator last  = sample.begin() + end;
-    
-    //selecting the subarray that will become the output
-    vector<float> newoutput(first, last);
-    
-    //interpolates if needed and stores the new array in the output
-    
-    if (needs_interpolate)
-        output_buf = interpolating_beg_and_end(newoutput);
-    else
-        output_buf = newoutput;
-        //output_buf = sample;
-    
-    if (debug)
-        cout << "updating the output buffer! new beg: " << begin << " new end: " << end <<  endl;
+    output_buf = sample;
     
 }
-
-//we can do it faster, read the whole storage and add it to the output
-void Loop::update_output_buffer(bool needs_interpolate)
-{
-    update_output_buffer(0, sample.size(), needs_interpolate);
-    
-}
-
-//////////////////////////////////
-//interpolation of the vector newoutput
-//////////////////////////////////
-vector<float> Loop::interpolating_beg_and_end(vector<float> &newoutput) {
-    /*
-    /////////////////
-    // ONE BUFFER SIZE IN THE BEGINING ANOTHER IN THE END
-     
-    //getting the first chunck
-    vector<float> first_chunck(newoutput.begin(), newoutput.begin() + bufferSize);
-    //getting the last chunk
-    vector<float> last_chunck(newoutput.end()-bufferSize, newoutput.end());
-    
-    //overlapping the beginning
-    //iterating over the BUFFER_SIZE last samples
-    for (int a = 0; a < bufferSize; a=a+2) {
-        //computing the current weight
-        float weight     = a/(float)(bufferSize);
-        float inv_weight = 1-weight;
-        
-        //interpolating between the current sample and the first one (the one we want to morph into)
-        float interpolated_value_l = (weight*first_chunck[a])   + (inv_weight*last_chunck[a]);
-        float interpolated_value_r = (weight*first_chunck[a+1]) + (inv_weight*last_chunck[a+1]);
-        
-        //updating values
-        newoutput[a  ] = interpolated_value_l;
-        newoutput[a+1] = interpolated_value_r;
-    }
-    
-    //delete the last chunk
-    newoutput.erase(newoutput.end()-(bufferSize) , newoutput.end());
-    
-    return newoutput;
-    
-    //end of interpolation
-    ///////////////////////////////////////////
-     */
-    
-    // TWO BUFFER SIZE IN THE BEGINING ANOTHER IN THE END
-    //getting the first chunck
-    vector<float> first_chunck(newoutput.begin(), newoutput.begin() + 2*bufferSize);
-    //getting the last chunk
-    vector<float> last_chunck(newoutput.end()-2*bufferSize, newoutput.end());
-    
-    //overlapping the beginning
-    //iterating over the BUFFER_SIZE last samples
-    for (int a = 0; a < 2*bufferSize; a=a+2) {
-        //computing the current weight
-        float weight     = a/(float)(bufferSize*2);
-        float inv_weight = 1-weight;
-        
-        //interpolating between the current sample and the first one (the one we want to morph into)
-        float interpolated_value_l = (weight*first_chunck[a])   + (inv_weight*last_chunck[a]);
-        float interpolated_value_r = (weight*first_chunck[a+1]) + (inv_weight*last_chunck[a+1]);
-        
-        //updating values
-        newoutput[a  ] = interpolated_value_l;
-        newoutput[a+1] = interpolated_value_r;
-    }
-    
-    //delete the last chunk
-    newoutput.erase(newoutput.end()-(bufferSize*2) , newoutput.end());
-    
-    return newoutput;
-    
-    //end of interpolation
-    ///////////////////////////////////////////
-}
-
-
 
 //////////////////////////////////
 // returns if it's recording or not
@@ -348,4 +277,33 @@ void Loop::set_debug(bool debug)
 void Loop::set_volume(float volume)
 {
     this->volume=volume;
+}
+
+
+//////////////////////////////////
+// sets the sample to fully loop from its beg to its end
+//////////////////////////////////
+void Loop::set_full_looping_area()
+{
+    set_looping_area(0, sample.size());
+}
+
+//////////////////////////////////
+// sets the sample to loop between start and end
+//////////////////////////////////
+void Loop::set_looping_area(int start, int end)
+{
+    //if start is an odd number (right channel), makes it even (left channel)
+    if (start%2 != 0)
+        start -=1;
+    
+    //if start is an even number (left channel), makes it even (right channel)
+    if (end%2 != 0)
+        end -=1;
+    
+    //if (debug)
+    //    cout << "start: " << start << " end: " << end <<endl;
+    
+    start_index = start;
+    end_index   = end;
 }

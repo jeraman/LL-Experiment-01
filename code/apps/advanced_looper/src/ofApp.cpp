@@ -1,6 +1,5 @@
 #include "ofApp.h"
 
-
 //--------------------------------------------------------------
 void ofApp::setup(){	 
 	
@@ -79,12 +78,14 @@ void ofApp::update(){
         case TWO_FINGERS: //two fingers in the screen
             update_TWO_FINGERS(is_first_time_state_is_accessed);
             break;
+        /*
         case THREE_FINGERS: //three fingers in the screen
             update_THREE_FINGERS(is_first_time_state_is_accessed);
             break;
         case FOUR_FINGERS: //four fingers in the screen
             update_FOUR_FINGERS(is_first_time_state_is_accessed);
             break;
+         */
     }
     
     //updates last state
@@ -95,18 +96,9 @@ void ofApp::update(){
 void ofApp::update_NONE(bool is_first_time_state_is_accessed)
 {
     if (is_first_time_state_is_accessed) {
-        //updates output with interpolation
-        loop.update_output_buffer(true);
+        //updates to the full looping area
+        loop.set_full_looping_area();
        
-        //gets where the xfinger was
-        int old_head = gui.get_head_offset();
-        
-        //updates the loop head to where the finger was
-        loop.set_head_absolute(old_head+loop.outpos);
-        
-        //sets the gui headoffset to zero
-        gui.set_head_offset(0);
-        
         //removes any window the gui might have
         gui.remove_window();
     }
@@ -127,30 +119,11 @@ void ofApp::update_ONE_FINGER(bool is_first_time_state_is_accessed)
     //computing value for the volume
     float newy = (1-f1.y)*2;
     
-    /* new - simpler */
-    
     //new attempt
-    loop.set_head_absolute(newx);
+    //loop.set_head_absolute(newx);
     
-    //sets the new volume
-    loop.set_volume(newy);
-    
-    //updates the drawing scale for the waveform
-    gui.set_scale(newy);
-
-    
-    /* old - more complex
-    
-    //computs the range from newx
-    float range = 6*loop.bufferSize;
-    
-    //updates newx in case it's too close to the beginning. +2 because it needs to be even
-    if (newx <= range)
-        newx = range+2;
-    
-    //updates newx in case it's too close to the end
-    if (newx >= loop.get_size()-range)
-        newx = loop.get_size()-range-2;
+    //updates the looping area
+    loop.set_looping_area(newx, newx + 15*loop.bufferSize);
     
     //sets the new volume
     loop.set_volume(newy);
@@ -158,20 +131,6 @@ void ofApp::update_ONE_FINGER(bool is_first_time_state_is_accessed)
     //updates the drawing scale for the waveform
     gui.set_scale(newy);
     
-    //moves the head to the new position
-    gui.set_head_offset(newx);
-    
-    
-    //updates the output looper
-    loop.update_output_buffer(newx-range, newx+range, true);
-    
-    //if this is the first time
-    if (is_first_time_state_is_accessed)
-     
-        //sets the head to zero
-        loop.set_head_absolute(0);
-    */
-     
     //removes any possible window
     gui.remove_window();
     
@@ -194,37 +153,12 @@ void ofApp::update_TWO_FINGERS(bool is_first_time_state_is_accessed)
     int newf2x = f2.x*loop.get_size();
     
     float newy = (1-((f1.y+f2.y)/2))*2;
-    
-    //organizes each one should go first and updates the output buffer
-    if (newf2x >newf1x) {
+
+    //updates the looping area
+    loop.set_looping_area(newf1x, newf2x);
         
-        //updates the loop position
-        loop.update_output_buffer(newf1x, newf2x, true);
-        
-        //sets the window
-        gui.set_window(f1.x*ofGetWidth(), f2.x*ofGetWidth());
-        
-        //updates the loop position
-        gui.set_head_offset(newf1x);
-        
-    } else {
-        
-        //updates the loop position
-        loop.update_output_buffer(newf2x, newf1x, true);
-        
-        //sets the window
-        gui.set_window(f2.x*ofGetWidth(), f1.x*ofGetWidth());
-        
-        //updates the head of the gui
-        gui.set_head_offset(newf2x);
-    }
-    
-    //if this is the first time
-    if (is_first_time_state_is_accessed) {
-        
-        //sets the head to zero
-        loop.set_head_absolute(0);
-    }
+    //sets the window
+    gui.set_window(f1.x*ofGetWidth(), f2.x*ofGetWidth());
     
     //sets the volue
     loop.set_volume(newy);
@@ -248,8 +182,6 @@ void ofApp::update_THREE_FINGERS(bool is_first_time_state_is_accessed)
     Touch f2 = fingers[1];
     Touch f3 = fingers[2];
     
-    gui.remove_window();
-    
     if (debug) {
         cout << "update_THREE_FINGERS!"<< endl;
         cout << "           x: " << f1.x << " y: " << f1.y << endl;
@@ -266,7 +198,7 @@ void ofApp::update_FOUR_FINGERS(bool is_first_time_state_is_accessed)
     Touch f3 = fingers[2];
     Touch f4 = fingers[3];
     
-    gui.remove_window();
+    //gui.remove_window();
     
     if (debug) {
         cout << "update_FOUR_FINGERS!"<< endl;

@@ -31,43 +31,42 @@ class Loop
         void set_volume (float);                      //sets the volume
         void set_debug (bool);                        //debug control
         void set_head_normalized (float);             //sets the loop head position (between 0 and 1)
-        void set_head_absolute (int);               ///using the size of the sample
-        void update_output_buffer (bool);             //updates the output buffer
-        void update_output_buffer (int, int, bool);   //updates the output buffer
+        void set_head_absolute (int);                 ///using the size of the sample
+        void set_looping_area(int, int);              //sets the looping area between int and int
+        void set_full_looping_area();                 //sets the sample to fully loop (from beg to end)
     
-        vector<float> interpolating_beg_and_end (vector<float> &newoutput);            //interpolates the begning and the and of an audio sample in order to avoid glitch
+        void update_output_buffer ();             //updates the output buffer
+        //void update_output_buffer (bool);             //updates the output buffer
+        //void update_output_buffer (int, int, bool);   //updates the output buffer
     
+        //vector<float> interpolating_beg_and_end (vector<float> &newoutput);            //interpolates the begning and the and of an audio sample in order to avoid glitch
     
         bool is_recording ();                          //returns if it's recording or not
         bool is_empty ();                              // if this loop is clear/empty or not
         int  get_size ();                              //gets the size of this loop
     
-    
-    
-        int outpos;          //a agulha do vinil (para este loop)
-        int bufferSize;      //tamanho do buffer quando gravado
-        int nChannels;       //número de canais do loop
-        int inipos;          //posição inicial com relação ao main
-
-        int  start_time;     //how many seconds have passed
-        int  temp_inipos;    //stores the temp inipos!  
         bool muted;          //to mute the loop
         bool overdubbing;    //indicates if this loop is currently overdubbing or not
-        bool recording;
-        bool playing;
-        bool debug;
-
-        //variaveis não utilizadas
-        float volume;
-        float leftpan;
-        float rightpan;
-        float fade;
+        bool recording;      //is it recording right now?
+        bool playing;        //is it playing right now?
+        bool debug;          //is it debugging right now?
+    
+        int outpos;          //a agulha do vinil (para este loop)
+        int start_index;     //index where the looping starts
+        int end_index;       //index where the loop ends
+    
+        float volume;        //stores the current volume
+    
+        int bufferSize;      //tamanho do buffer quando gravado
+        int nChannels;       //número de canais do loop
     
         vector<float> input_buf;        //stores the loop being currently recorded
         vector<float> output_buf;       //stores the loop that is being played
-
-    //private:
-        vector<float> sample; //stores the raw loop
+        vector<float> sample;           //stores the raw loop
+    
+        //unused variables
+        float leftpan;       //stores the amount of left pan
+        float rightpan;      //stores the amount of right pan
 
 };
 

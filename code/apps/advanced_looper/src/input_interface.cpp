@@ -1,5 +1,6 @@
 #include "input_interface.h"
 
+
 Input_Interface::Input_Interface()
 {
     pad = ofxMultiTouchPad();
@@ -65,6 +66,9 @@ vector<Touch> Input_Interface::get_fingers ()
         //returning the touches
         fingers.push_back(newFinger);
     }
+    
+    //sorting the output vector
+    std::sort(fingers.begin(), fingers.end());
     
     return fingers;
 }
