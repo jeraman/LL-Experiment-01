@@ -158,14 +158,30 @@ void Gui:: drawWindow(bool is_recording) {
     //if there is an aux window
     if (there_is_an_aux_window) {
         
-        //drawing first overlay
-        ofDrawRectangle(0, 0, window1_start, ofGetHeight());
+        //who is the first to be drawn? in case its window1...
+        if (window1_start < window2_start) {
         
-        //drawing second overlay
-        ofDrawRectangle(window1_end, 0, window2_start-window1_end, ofGetHeight());
+            //drawing first overlay
+            ofDrawRectangle(0, 0, window1_start, ofGetHeight());
         
-        //drawing third overlay
-        ofDrawRectangle(window2_end, 0, ofGetWidth()-window2_end, ofGetHeight());
+            //drawing second overlay
+            ofDrawRectangle(window1_end, 0, window2_start-window1_end, ofGetHeight());
+        
+            //drawing third overlay
+            ofDrawRectangle(window2_end, 0, ofGetWidth()-window2_end, ofGetHeight());
+        
+        //in case it's window 2...x
+        } else {
+            
+            //drawing first overlay
+            ofDrawRectangle(0, 0, window2_start, ofGetHeight());
+            
+            //drawing second overlay
+            ofDrawRectangle(window2_end, 0, window1_start-window2_end, ofGetHeight());
+            
+            //drawing third overlay
+            ofDrawRectangle(window1_end, 0, ofGetWidth()-window1_end, ofGetHeight());
+        }
         
     //if there is no aux window
     } else {
