@@ -155,20 +155,42 @@ void Gui:: drawWindow(bool is_recording) {
     //sets color
     ofSetColor(150, 100);
     
-    //drawing first overlay
-    ofDrawRectangle(0, 0, window1_start, ofGetHeight());
+    //if there is an aux window
+    if (there_is_an_aux_window) {
+        
+        //drawing first overlay
+        ofDrawRectangle(0, 0, window1_start, ofGetHeight());
+        
+        //drawing second overlay
+        ofDrawRectangle(window1_end, 0, window2_start-window1_end, ofGetHeight());
+        
+        //drawing third overlay
+        ofDrawRectangle(window2_end, 0, ofGetWidth()-window2_end, ofGetHeight());
+        
+    //if there is no aux window
+    } else {
     
-    //drawing second overlay
-    ofDrawRectangle(window1_end, 0, ofGetWidth()-window1_end, ofGetHeight());
+        //drawing first overlay
+        ofDrawRectangle(0, 0, window1_start, ofGetHeight());
     
-    //if it's recording
+        //drawing second overlay
+        ofDrawRectangle(window1_end, 0, ofGetWidth()-window1_end, ofGetHeight());
+    }
+    
+    
+    //if it's recording, draw the recording area
     if (is_recording){
         
         //sets the red color
         ofSetColor(255, 100, 100, 150);
-            
-        //draw the recording area
+        
+        //draw the first recording area
         ofDrawRectangle(window1_start, 0, window1_end-window1_start, ofGetHeight());
+        
+        if (there_is_an_aux_window)
+            
+            //draw the first recording area
+            ofDrawRectangle(window2_start, 0, window2_end-window2_start, ofGetHeight());
     }
 }
 
@@ -203,10 +225,24 @@ void Gui::set_window(int x1, int x2)
     window1_end=x2;
 }
 
+void Gui::set_aux_window(int x1, int x2)
+{
+    window2_start = x1;
+    window2_end=x2;
+    there_is_an_aux_window = true;
+}
+
 void Gui::remove_window()
 {
     window1_start = -1;
     window1_end=-1;
+}
+
+void Gui::remove_aux_window()
+{
+    window2_start = -1;
+    window2_end=-1;
+    there_is_an_aux_window = false;
 }
 
 
@@ -214,6 +250,7 @@ void Gui::set_debug(bool debug)
 {
     this->debug=debug;
 }
+
 /*
 void Gui::set_head_offset (int head_offset)
 {

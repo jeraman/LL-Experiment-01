@@ -124,17 +124,23 @@ void Loop::play(float* &output)
                 output[index  ] += output_buf[aux_output_buf_index] * aux_volume * leftpan;
                 output[index+1] += output_buf[aux_output_buf_index] * aux_volume * rightpan;
             }
-                
+            
+            //updates output buf if overdubing and got to an end
+            if (overdubbing && (output_buf_index==0||aux_output_buf_index==0))
+                update_output_buffer();
+             
+            
         }
         
         //updating the current position
         outpos = ((outpos + (bufferSize*nChannels))%(end_index));
-
+        
         //checks if the outpos if suitable
         if (outpos < start_index || outpos > end_index)
         
             //goes directly to the start_index
             outpos = start_index;
+            
         
         //repeat the same thing if there is currentyl an aux looping area
         if (there_is_aux_looping_area()) {
@@ -143,7 +149,7 @@ void Loop::play(float* &output)
             
             if (aux_outpos < aux_start_index || aux_outpos > aux_end_index)
                 aux_outpos = aux_start_index;
-
+                
         }
     }
 }
@@ -220,6 +226,17 @@ void Loop::overdub_sample_vector(float* &input)
         
         sample[(outpos + index)%sample.size()]     += input[index  ]   *  leftpan;
         sample[(outpos + index + 1)%sample.size()] += input[index +1 ] * rightpan;
+        
+        //[AUX] computing the index in the output_buf
+        int   aux_output_buf_index = (aux_outpos + index)%sample.size();
+        
+        //if there is currentyl an aux looping area
+        if (there_is_aux_looping_area()) {
+            
+            //same as before
+            sample[aux_output_buf_index] += input[index]   * leftpan;
+            sample[aux_output_buf_index] += input[index+1] * rightpan;
+        }
         
     }
 }
@@ -366,3 +383,26 @@ bool Loop::there_is_aux_looping_area()
 {
     return (aux_start_index !=- 1 && aux_end_index !=- 1);
 }
+
+//////////////////////////////////
+// returns if there is an looping area
+//////////////////////////////////
+bool Loop::there_is_looping_area()
+{
+    return (start_index != 0 && end_index != output_buf.size());
+}
+
+//returns the looping area
+ofPoint Loop::get_looping_area()
+{
+    ofPoint looping_area(start_index, end_index);
+    return looping_area;
+}
+
+//returns the aux looping area
+ofPoint Loop::get_aux_looping_area()
+{
+    ofPoint aux_looping_area(aux_start_index, aux_end_index);
+    return aux_looping_area;
+}
+

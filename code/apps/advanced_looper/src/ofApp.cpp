@@ -81,11 +81,9 @@ void ofApp::update(){
         case THREE_FINGERS: //three fingers in the screen
             update_THREE_FINGERS(is_first_time_state_is_accessed);
             break;
-        /*
         case FOUR_FINGERS: //four fingers in the screen
             update_FOUR_FINGERS(is_first_time_state_is_accessed);
             break;
-        */
     }
     
     //updates last state
@@ -101,6 +99,9 @@ void ofApp::update_NONE(bool is_first_time_state_is_accessed)
        
         //removes any window the gui might have
         gui.remove_window();
+        
+        //removes any aux area
+        loop.remove_aux_looping_area();
     }
     
     //if (debug)
@@ -137,10 +138,13 @@ void ofApp::update_ONE_FINGER(bool is_first_time_state_is_accessed)
     //removes any loooping area
     loop.remove_aux_looping_area();
     
-    //if (debug) {
-    //    cout << "update_ONE_FINGER!"<< endl;
-    //    cout << "           x: " << f1.x << " y: " << f1.y << endl;
-    //}
+    //removes aux window
+    gui.remove_aux_window();
+    
+    if (debug) {
+        cout << "update_ONE_FINGER!"<< endl;
+        cout << "           x: " << f1.x << " y: " << f1.y << endl;
+    }
     
     
 }
@@ -172,6 +176,9 @@ void ofApp::update_TWO_FINGERS(bool is_first_time_state_is_accessed)
     //removes any loooping area
     loop.remove_aux_looping_area();
     
+    //removes aux window
+    gui.remove_aux_window();
+    
     //organizes each one should go first and updates the head of the gui
     
     if (debug) {
@@ -184,41 +191,95 @@ void ofApp::update_TWO_FINGERS(bool is_first_time_state_is_accessed)
 //--------------------------------------------------------------
 void ofApp::update_THREE_FINGERS(bool is_first_time_state_is_accessed)
 {
-    Touch f1 = fingers[0];
-    Touch f2 = fingers[1];
-    Touch f3 = fingers[2];
+    //these variables are organized incrementally
+    Touch f1 = fingers[0]; //window start
+    Touch f2 = fingers[1]; //window end
+    Touch f3 = fingers[2]; //independent voice
+    
+    
+    //if there is already a window, update the previous variables accordinly
+    if (loop.there_is_looping_area()) {
+        
+        /////////////////////
+        // GETS WHAT FINGER IS THE BEGINING OF THE WINDOW AND SETS IT TO F1
+        //getting the window
+        ofPoint window = loop.get_looping_area();
+        
+        //getting the start position
+        float start = window.x/loop.get_size();
+        
+        //computing the distance of each finger against the window's start
+        for (int i = 0; i < fingers.size(); i++)
+            fingers[i].compute_distance_to_a_point(start);
+        
+        //sorting using this distance
+        std::sort(fingers.begin(), fingers.end(), distance_sorting);
+        
+        //getting the begining of the window
+        f1 = fingers[0];
+        
+        //removing the selected from the vector
+        fingers.erase(fingers.begin());
+        
+        /////////////////////
+        // GETS WHAT FINGER IS THE END OF THE WINDOW AND SETS IT TO F2
+        //getting the end position
+        float end   = window.y/loop.get_size();
+        
+        //computing the distance of each finger against the window's end
+        for (int i = 0; i < fingers.size(); i++)
+            fingers[i].compute_distance_to_a_point(end);
+        
+        //sorting using this distance
+        std::sort(fingers.begin(), fingers.end(), distance_sorting);
+        
+        //getting the begining of the window
+        f2 = fingers[0];
+        
+        //removing the selected from the vector
+        fingers.erase(fingers.begin());
+        
+        //sets the remaining as finger 3
+        f3 = fingers[0];
+        
+    }
+    
     
     //computing the position in the sound
     int newf1x = f1.x*loop.get_size();
-    int newf3x = f3.x*loop.get_size();
+    int newf2x = f2.x*loop.get_size();
 
-    float new13y = (1-((f1.y+f3.y)/2))*2;
+    float new12y = (1-((f1.y+f2.y)/2))*2;
     
     //updates the looping area
-    loop.set_looping_area(newf1x, newf3x);
+    loop.set_looping_area(newf1x, newf2x);
     
     //sets the window
-    gui.set_window(f1.x*ofGetWidth(), f3.x*ofGetWidth());
+    gui.set_window(f1.x*ofGetWidth(), f2.x*ofGetWidth());
     
     //sets the volume
-    loop.set_volume(new13y);
+    loop.set_volume(new12y);
     
     //sets the scale
-    gui.set_scale(new13y);
+    gui.set_scale(new12y);
 
 
     /////////////////////
     // AUX
-    int newf2x = f2.x*loop.get_size();
+    int newf3x = f3.x*loop.get_size();
     
     //getting y position
-    float new2y = (1-f2.y)*2;
+    float new3y = (1-f3.y)*2;
     
     //updates the aux looping area
-    loop.set_aux_looping_area(newf2x, newf2x + 15*loop.bufferSize);
+    loop.set_aux_looping_area(newf3x, newf3x + 15*loop.bufferSize);
     
     //sets the aux volume
-    loop.set_aux_volume(new2y);
+    loop.set_aux_volume(new3y);
+    
+    //removes aux window
+    gui.remove_aux_window();
+    
     
     if (debug) {
         cout << "update_THREE_FINGERS!"<< endl;
@@ -228,6 +289,7 @@ void ofApp::update_THREE_FINGERS(bool is_first_time_state_is_accessed)
     }
 }
 
+
 //--------------------------------------------------------------
 void ofApp::update_FOUR_FINGERS(bool is_first_time_state_is_accessed)
 {
@@ -235,6 +297,60 @@ void ofApp::update_FOUR_FINGERS(bool is_first_time_state_is_accessed)
     Touch f2 = fingers[1];
     Touch f3 = fingers[2];
     Touch f4 = fingers[3];
+    
+    
+    //if there is already a window, update the previous variables accordinly
+    if (loop.there_is_looping_area()) {
+        
+        /////////////////////
+        // GETS WHAT FINGER IS THE BEGINING OF THE WINDOW AND SETS IT TO F1
+        //getting the window
+        ofPoint window = loop.get_looping_area();
+        
+        //getting the start position
+        float start = window.x/loop.get_size();
+        
+        //computing the distance of each finger against the window's start
+        for (int i = 0; i < fingers.size(); i++)
+            fingers[i].compute_distance_to_a_point(start);
+        
+        //sorting using this distance
+        std::sort(fingers.begin(), fingers.end(), distance_sorting);
+        
+        //getting the begining of the window
+        f1 = fingers[0];
+        
+        //removing the selected from the vector
+        fingers.erase(fingers.begin());
+        
+        /////////////////////
+        // GETS WHAT FINGER IS THE END OF THE WINDOW AND SETS IT TO F2
+        //getting the end position
+        float end   = window.y/loop.get_size();
+        
+        //computing the distance of each finger against the window's end
+        for (int i = 0; i < fingers.size(); i++)
+            fingers[i].compute_distance_to_a_point(end);
+        
+        //sorting using this distance
+        std::sort(fingers.begin(), fingers.end(), distance_sorting);
+        
+        //getting the begining of the window
+        f2 = fingers[0];
+        
+        //removing the selected from the vector
+        fingers.erase(fingers.begin());
+        
+        //sorting using this x axis
+        std::sort(fingers.begin(), fingers.end(), x_sorting);
+        
+        //sets the remaining as finger 3 and 4
+        f3 = fingers[0];
+        
+        //sets the remaining as finger 3
+        f4 = fingers[1];
+        
+    }
     
     //computing the position in the sound
     int newf1x = f1.x*loop.get_size();
@@ -263,15 +379,14 @@ void ofApp::update_FOUR_FINGERS(bool is_first_time_state_is_accessed)
     //updates the looping area
     loop.set_aux_looping_area(newf3x, newf4x);
     
-    //sets the window
-    gui.set_window(f3.x*ofGetWidth(), f4.x*ofGetWidth());
+    //sets the aux window
+    gui.set_aux_window(f3.x*ofGetWidth(), f4.x*ofGetWidth());
     
     //sets the volue
     loop.set_aux_volume(newy);
     
     //sets the scale
     gui.set_scale(newy);
-    
     
     if (debug) {
         cout << "update_FOUR_FINGERS!"<< endl;

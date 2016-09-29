@@ -24,17 +24,35 @@ public:
     float y;
     float angle;
     float size;
+    float distance;
     
     Touch(float x, float y, float angle=0, float size=0) {
         this->x = x;
         this->y = y;
         this->angle = angle;
         this->size  = size;
+        this->distance = 0;
+    }
+    
+    void compute_distance_to_a_point (float posx) {
+        this->distance = abs(x-posx);
     }
     
     //overloading the < operator to be used in the sorting
-    bool operator<(const Touch& t2) const { return (x < t2.x); }
+    //bool operator<(const Touch& t2) const { return (x < t2.x); }
 };
+
+//sorting function by x axis
+static bool x_sorting (const Touch &a, const Touch &b) {
+    return a.x < b.x;
+}
+
+//sorting function by distance from a given point.
+//ATTENTION: you need to compute the distance before using this function!
+static bool distance_sorting (const Touch &a, const Touch &b) {
+    return a.distance < b.distance;
+}
+
 
 /********************************
  Hides from the system what input interface is currently being used (e.g. ipad, mouse pad, etc).
@@ -52,7 +70,7 @@ public:
     State get_state ();           //update the input interface update machine
     vector<Touch> get_fingers (); //returns a vector with the current finger positions
     void set_debug (bool);        //debug control
-
+    
 private:
     bool debug;
     ofxMultiTouchPad pad;

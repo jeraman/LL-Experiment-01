@@ -38,10 +38,16 @@ class Loop
         void set_aux_looping_area(int, int);
         void remove_aux_looping_area();
     
+        ofPoint get_looping_area();                   //sets the looping area between int and int
+        ofPoint get_aux_looping_area();               //sets the looping area between int and int
+    
         void update_output_buffer ();                 //updates the output buffer
+        void update_looping_area (int, int);
+        void update_aux_looping_area (int, int);
     
         bool is_recording ();                      //returns if it's recording or not
         bool is_empty ();                          //if this loop is clear/empty or not
+        bool there_is_looping_area();               //verifies if the looping area is currently working
         bool there_is_aux_looping_area();          //verifies if the aux looping area is currently working
         int  get_size ();                          //gets the size of this loop
     

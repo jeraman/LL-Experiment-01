@@ -68,7 +68,7 @@ vector<Touch> Input_Interface::get_fingers ()
     }
     
     //sorting the output vector
-    std::sort(fingers.begin(), fingers.end());
+    std::sort(fingers.begin(), fingers.end(), x_sorting);
     
     return fingers;
 }
