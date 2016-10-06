@@ -21,9 +21,10 @@ Input_Interface::~Input_Interface()
 
 State Input_Interface::get_state ()
 {
-    //vector<MTouch> mTouches = pad.getTouches();
+    vector<Touch> mTouches = get_fingers();
+    int options = mTouches.size();
     
-    switch(pad.getTouchCount())
+    switch(options)
     {
         case 0:
             state = NONE;
@@ -45,11 +46,43 @@ State Input_Interface::get_state ()
     return state;
 }
 
+//@TODO - update the visuals
+void Input_Interface::draw ()
+{
+    ofSetColor(255, 128, 0);
+    std::vector<Touch> mTouches = get_fingers();
+    float scale = 100;
+    for (std::vector<Touch>::iterator touch=mTouches.begin(); touch!=mTouches.end(); ++touch)
+    {
+        float size = (touch->size)*scale;
+        ofPushMatrix();
+        ofTranslate(touch->x*ofGetWidth(), touch->y*ofGetHeight());
+        ofRotate(touch->angle);
+        ofEllipse(0, 0, size, size*.5);
+        ofPopMatrix();
+    }
+    
+    ofPopMatrix();
+    
+    //debugging
+    if (debug) {
+        string info = "NUMBER OF TOUCHES: "+ofToString(mTouches.size(),0);
+        ofSetColor(200);
+        ofDrawBitmapString(info, ofPoint(20, 50));
+    }
+}
+
+
+void Input_Interface::set_debug(bool debug)
+{
+    this->debug=debug;
+}
+
 
 vector<Touch> Input_Interface::get_fingers ()
 {
-    vector<MTouch> mTouches = pad.getTouches();
     vector<Touch> fingers;
+    vector<MTouch> mTouches = pad.getTouches();
     
     float scale = 100;
     for (std::vector<MTouch>::iterator touch=mTouches.begin(); touch!=mTouches.end(); ++touch)
@@ -71,37 +104,4 @@ vector<Touch> Input_Interface::get_fingers ()
     std::sort(fingers.begin(), fingers.end(), x_sorting);
     
     return fingers;
-}
-
-//@TODO - update the visuals
-void Input_Interface::draw ()
-{
-    ofSetColor(255, 128, 0);
-    std::vector<MTouch> mTouches = pad.getTouches();
-    float scale = 100;
-    for (std::vector<MTouch>::iterator touch=mTouches.begin(); touch!=mTouches.end(); ++touch)
-    {
-        float size = (touch->size)*scale;
-        ofPushMatrix();
-        ofTranslate(touch->x*ofGetWidth(), touch->y*ofGetHeight());
-        ofRotate(touch->angle);
-        ofEllipse(0, 0, size, size*.5);
-        ofPopMatrix();
-    }
-    
-    ofPopMatrix();
-    
-    //debugging
-    if (debug) {
-        string info = "NUMBER OF TOUCHES: "+ofToString(pad.getTouchCount(),0);
-        ofSetColor(200);
-        ofDrawBitmapString(info, ofPoint(20, 50));
-    }
-}
-
-
-
-void Input_Interface::set_debug(bool debug)
-{
-    this->debug=debug;
 }

@@ -54,10 +54,6 @@ static bool distance_sorting (const Touch &a, const Touch &b) {
 }
 
 
-/********************************
- Hides from the system what input interface is currently being used (e.g. ipad, mouse pad, etc).
- ********************************/
-
 class Input_Interface
 {
     
