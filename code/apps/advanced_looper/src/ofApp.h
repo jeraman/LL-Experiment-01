@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "loop.h"
 #include "input_interface.h"
+#include "state_machine.h"
 #include "gui.h"
 
 
@@ -15,12 +16,6 @@ class ofApp : public ofBaseApp{
 		void draw();
     
         void setup_sound();
-        void update_NONE(bool);
-        void update_ONE_FINGER(bool);
-        void update_TWO_FINGERS(bool);
-        void update_THREE_FINGERS(bool);
-        void update_FOUR_FINGERS(bool);
-		
 		void keyPressed(int key);
 		void keyReleased(int key);
 		void mouseMoved(int x, int y );
@@ -39,20 +34,8 @@ class ofApp : public ofBaseApp{
         void set_debug(bool);
     
     private:
-        Loop loop;
-        Input_Interface inter;
-        Gui gui;
-    
-        State state, last_state;
-        vector<Touch> fingers;
-    
-        vector <float> leftMic;
-        vector <float> rightMic;
+        State_Machine sm;
         ofSoundStream soundStream;
-    
-        float 	pan;
-        int		sampleRate;
-        float 	volume;
-        bool    debug;
+        bool          debug;
     
 };

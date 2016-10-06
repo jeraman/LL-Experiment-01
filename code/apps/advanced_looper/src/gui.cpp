@@ -27,13 +27,13 @@ Gui::~Gui()
 }
 
 //@TODO - update the visuals
-void Gui::draw(vector<float>& leftMic, vector<float>& rightMic, Loop* first) {
+void Gui::draw(Loop* first) {
     
     drawBackground(first->is_recording());
     drawFirstLoop(first);
     drawHead(first);
     drawAuxHead(first);
-    drawMic(leftMic, rightMic);
+    drawMic();
     
     
     if (window1_start != -1 && window1_end != -1)
@@ -211,7 +211,7 @@ void Gui:: drawWindow(bool is_recording) {
 }
 
 // draw the left channel:
-void Gui::drawMic(vector<float> & leftMic, vector<float> & rightMic) {
+void Gui::drawMic() {
     
     ofPushStyle();
     ofPushMatrix();
@@ -232,6 +232,25 @@ void Gui::drawMic(vector<float> & leftMic, vector<float> & rightMic) {
     
     ofPopMatrix();
     ofPopStyle();
+}
+
+
+//--------------------------------------------------------------
+void Gui::init_mic_buffer(int bufferSize) {
+    leftMic.assign(bufferSize, 0.0);
+    rightMic.assign(bufferSize, 0.0);
+    
+}
+
+
+//--------------------------------------------------------------
+void Gui::update_mic_buffer(float * input, int bufferSize, int nChannels) {
+    
+    for (int i = 0; i < bufferSize; i++){
+        leftMic[i]	= input[i*2]*0.5;
+        rightMic[i]	= input[i*2+1]*0.5;
+    }
+    
 }
 
 

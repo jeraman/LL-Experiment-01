@@ -14,11 +14,8 @@ void ofApp::setup(){
     //init sound
     setup_sound();
     
-    //initializes the first state
-    state = inter.get_state();
-    
-    //initializes the last state
-    last_state = state;
+    //seting up state machine
+    sm.setup();
     
     //debug: end of setup function
     if (debug)
@@ -28,17 +25,10 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::setup_sound(){
     
-    //initializing the loop
-    loop.setup();
-    
-    //init the buffer fmor mic monitoring
-    leftMic.assign(loop.bufferSize, 0.0);
-    rightMic.assign(loop.bufferSize, 0.0);
-    
     //debug which devices are available in this machine
-    if (debug) {
+    if (debug)
         soundStream.printDeviceList();
-    }
+    
     
     //sets up the input and output interfaces
     bool result = soundStream.setup(this, N_CHANNELS, N_CHANNELS, SAMPLE_RATE, BUFFER_SIZE, 4);
@@ -52,381 +42,25 @@ void ofApp::setup_sound(){
 
 }
 
-
 //--------------------------------------------------------------
-void ofApp::update(){
-    
-    //if there are no loops, don't even bother processing the rest
-    if (loop.is_empty())
-        return;
-    
-    //gets the input_interface current state
-    state = inter.get_state();
-    fingers = inter.get_fingers();
-    
-    //verifies if this is the first time the current state is accessed
-    bool is_first_time_state_is_accessed = (last_state != state);
-    
-    //case-by-case analysis
-    switch(state) {
-        case NONE: //no fingers in the screen
-            update_NONE(is_first_time_state_is_accessed);
-            break;
-        case ONE_FINGER: //one finger in the screen
-            update_ONE_FINGER(is_first_time_state_is_accessed);
-            break;
-        case TWO_FINGERS: //two fingers in the screen
-            update_TWO_FINGERS(is_first_time_state_is_accessed);
-            break;
-        case THREE_FINGERS: //three fingers in the screen
-            update_THREE_FINGERS(is_first_time_state_is_accessed);
-            break;
-        case FOUR_FINGERS: //four fingers in the screen
-            update_FOUR_FINGERS(is_first_time_state_is_accessed);
-            break;
-    }
-    
-    //updates last state
-    last_state = state;
+void ofApp::update() {
+    sm.update();
 }
 
 //--------------------------------------------------------------
-void ofApp::update_NONE(bool is_first_time_state_is_accessed)
-{
-    if (is_first_time_state_is_accessed) {
-        //updates to the full looping area
-        loop.set_full_looping_area();
-       
-        //removes any window the gui might have
-        gui.remove_window();
-        
-        //removes any aux area
-        loop.remove_aux_looping_area();
-    }
-    
-    //if (debug)
-    //    cout << "update_NONE!" << endl;
+void ofApp::draw() {
+    sm.draw();
+}
+
+//--------------------------------------------------------------
+void ofApp::audioIn(float * input, int bufferSize, int nChannels) {
+    sm.audioIn(input, bufferSize, nChannels);
 }
 
 
 //--------------------------------------------------------------
-void ofApp::update_ONE_FINGER(bool is_first_time_state_is_accessed)
-{
-    Touch f1 = fingers[0];
-    
-    //computing the position in the sound
-    float newx = f1.x*loop.get_size();
-    
-    //computing value for the volume
-    float newy = (1-f1.y)*2;
-    
-    //new attempt
-    //loop.set_head_absolute(newx);
-    
-    //updates the looping area
-    loop.set_looping_area(newx, newx + 15*loop.bufferSize);
-    
-    //sets the new volume
-    loop.set_volume(newy);
-    
-    //updates the drawing scale for the waveform
-    gui.set_scale(newy);
-    
-    //removes any possible window
-    gui.remove_window();
-    
-    //removes any loooping area
-    loop.remove_aux_looping_area();
-    
-    //removes aux window
-    gui.remove_aux_window();
-    
-    if (debug) {
-        cout << "update_ONE_FINGER!"<< endl;
-        cout << "           x: " << f1.x << " y: " << f1.y << endl;
-    }
-    
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::update_TWO_FINGERS(bool is_first_time_state_is_accessed)
-{
-    Touch f1 = fingers[0];
-    Touch f2 = fingers[1];
-    
-    //computing the position in the sound
-    int newf1x = f1.x*loop.get_size();
-    int newf2x = f2.x*loop.get_size();
-    
-    float newy = (1-((f1.y+f2.y)/2))*2;
-
-    //updates the looping area
-    loop.set_looping_area(newf1x, newf2x);
-        
-    //sets the window
-    gui.set_window(f1.x*ofGetWidth(), f2.x*ofGetWidth());
-    
-    //sets the volue
-    loop.set_volume(newy);
-    
-    //sets the scale
-    gui.set_scale(newy);
-    
-    //removes any loooping area
-    loop.remove_aux_looping_area();
-    
-    //removes aux window
-    gui.remove_aux_window();
-    
-    //organizes each one should go first and updates the head of the gui
-    
-    if (debug) {
-        cout << "update_TWO_FINGERS!"<< endl;
-        cout << "           x: " << f1.x << " y: " << f1.y << endl;
-        cout << "           x: " << f2.x << " y: " << f2.y << endl;
-    }
-}
-
-//--------------------------------------------------------------
-void ofApp::update_THREE_FINGERS(bool is_first_time_state_is_accessed)
-{
-    //these variables are organized incrementally
-    Touch f1 = fingers[0]; //window start
-    Touch f2 = fingers[1]; //window end
-    Touch f3 = fingers[2]; //independent voice
-    
-    
-    //if there is already a window, update the previous variables accordinly
-    if (loop.there_is_looping_area()) {
-        
-        /////////////////////
-        // GETS WHAT FINGER IS THE BEGINING OF THE WINDOW AND SETS IT TO F1
-        //getting the window
-        ofPoint window = loop.get_looping_area();
-        
-        //getting the start position
-        float start = window.x/loop.get_size();
-        
-        //computing the distance of each finger against the window's start
-        for (int i = 0; i < fingers.size(); i++)
-            fingers[i].compute_distance_to_a_point(start);
-        
-        //sorting using this distance
-        std::sort(fingers.begin(), fingers.end(), distance_sorting);
-        
-        //getting the begining of the window
-        f1 = fingers[0];
-        
-        //removing the selected from the vector
-        fingers.erase(fingers.begin());
-        
-        /////////////////////
-        // GETS WHAT FINGER IS THE END OF THE WINDOW AND SETS IT TO F2
-        //getting the end position
-        float end   = window.y/loop.get_size();
-        
-        //computing the distance of each finger against the window's end
-        for (int i = 0; i < fingers.size(); i++)
-            fingers[i].compute_distance_to_a_point(end);
-        
-        //sorting using this distance
-        std::sort(fingers.begin(), fingers.end(), distance_sorting);
-        
-        //getting the begining of the window
-        f2 = fingers[0];
-        
-        //removing the selected from the vector
-        fingers.erase(fingers.begin());
-        
-        //sets the remaining as finger 3
-        f3 = fingers[0];
-        
-    }
-    
-    
-    //computing the position in the sound
-    int newf1x = f1.x*loop.get_size();
-    int newf2x = f2.x*loop.get_size();
-
-    float new12y = (1-((f1.y+f2.y)/2))*2;
-    
-    //updates the looping area
-    loop.set_looping_area(newf1x, newf2x);
-    
-    //sets the window
-    gui.set_window(f1.x*ofGetWidth(), f2.x*ofGetWidth());
-    
-    //sets the volume
-    loop.set_volume(new12y);
-    
-    //sets the scale
-    gui.set_scale(new12y);
-
-
-    /////////////////////
-    // AUX
-    int newf3x = f3.x*loop.get_size();
-    
-    //getting y position
-    float new3y = (1-f3.y)*2;
-    
-    //updates the aux looping area
-    loop.set_aux_looping_area(newf3x, newf3x + 15*loop.bufferSize);
-    
-    //sets the aux volume
-    loop.set_aux_volume(new3y);
-    
-    //removes aux window
-    gui.remove_aux_window();
-    
-    
-    if (debug) {
-        cout << "update_THREE_FINGERS!"<< endl;
-        cout << "           x: " << f1.x << " y: " << f1.y << endl;
-        cout << "           x: " << f2.x << " y: " << f2.y << endl;
-        cout << "           x: " << f3.x << " y: " << f3.y << endl;
-    }
-}
-
-
-//--------------------------------------------------------------
-void ofApp::update_FOUR_FINGERS(bool is_first_time_state_is_accessed)
-{
-    Touch f1 = fingers[0];
-    Touch f2 = fingers[1];
-    Touch f3 = fingers[2];
-    Touch f4 = fingers[3];
-    
-    
-    //if there is already a window, update the previous variables accordinly
-    if (loop.there_is_looping_area()) {
-        
-        /////////////////////
-        // GETS WHAT FINGER IS THE BEGINING OF THE WINDOW AND SETS IT TO F1
-        //getting the window
-        ofPoint window = loop.get_looping_area();
-        
-        //getting the start position
-        float start = window.x/loop.get_size();
-        
-        //computing the distance of each finger against the window's start
-        for (int i = 0; i < fingers.size(); i++)
-            fingers[i].compute_distance_to_a_point(start);
-        
-        //sorting using this distance
-        std::sort(fingers.begin(), fingers.end(), distance_sorting);
-        
-        //getting the begining of the window
-        f1 = fingers[0];
-        
-        //removing the selected from the vector
-        fingers.erase(fingers.begin());
-        
-        /////////////////////
-        // GETS WHAT FINGER IS THE END OF THE WINDOW AND SETS IT TO F2
-        //getting the end position
-        float end   = window.y/loop.get_size();
-        
-        //computing the distance of each finger against the window's end
-        for (int i = 0; i < fingers.size(); i++)
-            fingers[i].compute_distance_to_a_point(end);
-        
-        //sorting using this distance
-        std::sort(fingers.begin(), fingers.end(), distance_sorting);
-        
-        //getting the begining of the window
-        f2 = fingers[0];
-        
-        //removing the selected from the vector
-        fingers.erase(fingers.begin());
-        
-        //sorting using this x axis
-        std::sort(fingers.begin(), fingers.end(), x_sorting);
-        
-        //sets the remaining as finger 3 and 4
-        f3 = fingers[0];
-        
-        //sets the remaining as finger 3
-        f4 = fingers[1];
-        
-    }
-    
-    //computing the position in the sound
-    int newf1x = f1.x*loop.get_size();
-    int newf2x = f2.x*loop.get_size();
-    
-    float newy = (1-((f1.y+f2.y)/2))*2;
-    
-    //updates the looping area
-    loop.set_looping_area(newf1x, newf2x);
-    
-    //sets the window
-    gui.set_window(f1.x*ofGetWidth(), f2.x*ofGetWidth());
-    
-    //sets the volue
-    loop.set_volume(newy);
-    
-    //sets the scale
-    gui.set_scale(newy);
-    
-    //computing the position in the sound
-    int newf3x = f3.x*loop.get_size();
-    int newf4x = f4.x*loop.get_size();
-    
-    newy = (1-((f3.y+f4.y)/2))*2;
-    
-    //updates the looping area
-    loop.set_aux_looping_area(newf3x, newf4x);
-    
-    //sets the aux window
-    gui.set_aux_window(f3.x*ofGetWidth(), f4.x*ofGetWidth());
-    
-    //sets the volue
-    loop.set_aux_volume(newy);
-    
-    //sets the scale
-    gui.set_scale(newy);
-    
-    if (debug) {
-        cout << "update_FOUR_FINGERS!"<< endl;
-        cout << "           x: " << f1.x << " y: " << f1.y << endl;
-        cout << "           x: " << f2.x << " y: " << f2.y << endl;
-        cout << "           x: " << f3.x << " y: " << f3.y << endl;
-        cout << "           x: " << f4.x << " y: " << f4.y << endl;
-    }
-}
-
-
-//--------------------------------------------------------------
-void ofApp::draw(){
-    
-    gui.draw(leftMic, rightMic, &loop);
-    inter.draw();
-    
-    if (debug) {
-        string info = "CURRENT STATE: " + ofToString(inter.get_state(),0);
-        ofSetColor(200);
-        ofDrawBitmapString(info, ofPoint(20, 70));
-    }
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::audioIn(float * input, int bufferSize, int nChannels){
-    loop.audio_input(input);
-    
-    for (int i = 0; i < bufferSize; i++){
-        leftMic[i]	= input[i*2]*0.5;
-        rightMic[i]	= input[i*2+1]*0.5;
-    }
-
-}
-
-
-//--------------------------------------------------------------
-void ofApp::audioOut(float * output, int bufferSize, int nChannels){
-    loop.audio_output(output);
+void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
+    sm.audioOut(output, bufferSize, nChannels);
 }
 
 
@@ -439,21 +73,21 @@ void ofApp::keyPressed  (int key){
         this->set_debug(!debug);
     
     if (key==' ') {
-        if (loop.is_empty())
-            loop.record();
+        if (sm.is_loop_empty())
+            sm.record();
         else
-            loop.overdub();
+            sm.overdub();
     }
     
     if (key=='-')
-        loop.clear();
+        sm.clear_loops();
     
     if (key=='p' || key=='P') {
         paused = !paused;
         if (paused)
-            loop.stop();
+            sm.stop();
         else
-            loop.resume();
+            sm.resume();
     }
     
     if (debug)
@@ -464,9 +98,7 @@ void ofApp::keyPressed  (int key){
 void ofApp::set_debug(bool debug)
 {
     this->debug=debug;
-    gui.set_debug(debug);
-    inter.set_debug(debug);
-    loop.set_debug(debug);
+    sm.set_debug(debug);
 }
 
 

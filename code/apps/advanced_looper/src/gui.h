@@ -24,14 +24,16 @@ public:
      Gui(bool);   //constructor
     ~Gui();   //desctructor
     
-    void draw(vector<float> &, vector<float> &, Loop*);   //drawclass for visual feedback
+    void draw(Loop*);   //drawclass for visual feedback
     void drawBackground(bool);                            //draws the background
     void drawFirstLoop(Loop*);                            //draws the first loop
     void drawHead(Loop*);                                 //draws the head of the looper
     void drawAuxHead(Loop*);                              //draws the head of the looper
-    void drawMic(vector<float> &, vector<float> &);       //draws the input mic in realtime
-    void drawWindow(bool);                               //draws the window
+    void drawMic();                                       //draws the input mic in realtime
+    void drawWindow(bool);                                //draws the window
     
+    void init_mic_buffer(int);
+    void update_mic_buffer(float *, int, int);
     void set_debug(bool);                                 //debug control
     void set_scale(float);
     void set_window(int, int);
@@ -46,6 +48,9 @@ private:
     float scale;
     int window1_start, window1_end;
     int window2_start, window2_end;
+    
+    vector <float> leftMic;  //stores the left channel of live mic
+    vector <float> rightMic; //stores the right channel of live mic
 };
 
 #endif /* gui_h */
