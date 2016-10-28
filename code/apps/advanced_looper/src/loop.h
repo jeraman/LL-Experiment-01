@@ -34,6 +34,7 @@ class Loop
         void set_head_normalized (float);             //sets the loop head position (between 0 and 1)
         void set_head_absolute (int);                 ///using the size of the sample
         void set_looping_area(int, int);              //sets the looping area between int and int
+        void set_looping_area_with_volume(int, int, int, int); //sets the looping area between the two former ints. volume is a interpolation between the two last ints.
         void set_full_looping_area();                 //sets the sample to fully loop (from beg to end)
         void set_aux_looping_area(int, int);
         void remove_aux_looping_area();

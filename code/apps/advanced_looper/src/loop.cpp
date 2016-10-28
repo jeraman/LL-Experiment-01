@@ -339,30 +339,22 @@ void Loop::set_looping_area(int start, int end)
     //if (debug)
     //    cout << "start: " << start << " end: " << end <<endl;
     
+    
+    
     start_index = start;
     end_index   = end;
 }
 
 
+
 //////////////////////////////////
 // sets the sample to loop in a second area between start and end
 //////////////////////////////////
-void Loop::set_aux_looping_area(int start, int end)
+void Loop::set_looping_area_with_volume(int start, int end, int start_volume, int end_volume)
 {
-    //if start is an odd number (right channel), makes it even (left channel)
-    if (start%2 != 0)
-        start -=1;
+    set_looping_area(start, end);
     
-    //if start is an even number (left channel), makes it even (right channel)
-    if (end%2 != 0)
-        end -=1;
     
-    //setting the window
-    aux_start_index = start;
-    aux_end_index   = end;
-    
-    //the the aux head
-    //aux_outpos = start;
 }
 
 //////////////////////////////////
