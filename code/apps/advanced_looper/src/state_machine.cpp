@@ -251,10 +251,10 @@ void State_Machine::update_THREE_FINGERS(bool is_first_time_state_is_accessed) {
     float new3y = (1-f3.y)*2;
     
     //updates the aux looping area
-    loop.set_aux_looping_area(newf3x, newf3x + 15*loop.bufferSize);
+    //loop.set_aux_looping_area(newf3x, newf3x + 15*loop.bufferSize);
     
     //sets the aux volume
-    loop.set_aux_volume(new3y);
+    //loop.set_aux_volume(new3y);
     
     //removes aux window
     gui.remove_aux_window();
@@ -355,10 +355,10 @@ void State_Machine::update_FOUR_FINGERS(bool is_first_time_state_is_accessed) {
     newy = (1-((f3.y+f4.y)/2))*2;
     
     //updates the looping area
-    loop.set_aux_looping_area(newf3x, newf4x);
+    //loop.set_aux_looping_area(newf3x, newf4x);
     
     //sets the aux window
-    gui.set_aux_window(f3.x*ofGetWidth(), f4.x*ofGetWidth());
+    //gui.set_aux_window(f3.x*ofGetWidth(), f4.x*ofGetWidth());
     
     //sets the volue
     loop.set_aux_volume(newy);
