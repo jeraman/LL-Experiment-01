@@ -1,26 +1,25 @@
 # Prototyping Circuitry
-These are the steps to get the 'pedal' working:
 
-1. Get started on Arduino Micro 5v;
-2. Bluetooth module (Bluefruit & Arduino, iPad);
-3. Connect the button;
-4. Connect the two resistors;
-5. Test MIDI library;
-6. Test all together with independent power;
-7. Record a video of the prototype;
-
-## Material
-We are going to need:
+As materials, we are going to need:
 - A 5v Arduino;
 - A [Bluefruit board](https://learn.adafruit.com/introducing-the-adafruit-bluefruit-le-uart-friend/configuration) (Bluefruit LE UART Friend);
 - A bunch of jumpers;
 
+That said, these are the steps to get the 'pedal' working:
+- [x] Get started on Arduino;
+- [x] Bluetooth BLE board (Bluefruit & Arduino);
+- [x] MIDI on Arduino;
+- [ ] MIDI BLE from Arduino to a Mobile;
+- [ ] Connect the button;
+- [ ] Connect the two potentiometers;
+- [ ] Test all together with independent power;
+- [ ] Record a video of the prototype;
 
-# 1 - Get started on Arduino!
+# Get started on Arduino!
 Because there was no cable (get it ASAP!), decided to use my old Arduino Uno (still working!) instead of the brand new Arduino Micro. I also updated Arduino's IDE software.
 
-# 2 - Bluetooth module
-First, I soldered the connectors into the board. Then, I tested to see if the module was working all right by following the tutorial [here](https://learn.adafruit.com/introducing-the-adafruit-bluefruit-le-uart-friend/hidkeyboard).
+# Bluetooth BLE board
+First, I soldered the connectors into the board. Then, I tested to see if the module was working all right by following the tutorial [here](https://learn.adafruit.com/introducing-the-adafruit-bluefruit-le-uart-friend).
 
 In short, you'll need:
 
@@ -36,9 +35,16 @@ The tutorial is effective, covering things such as [configuring the board](https
 PS: Detailed documentation of AT commands can be found [here](https://learn.adafruit.com/introducing-adafruit-ble-bluetooth-low-energy-friend/standard-at).
 
 ## Testing the BLE with a tablet/smartphone
-You can test communication with your Android phone doing as demonstrate in [this video](https://www.youtube.com/watch?v=4hWlDKzn7tA).
+You can test communication with your Android/iOs doing as demonstrate in [this video](https://www.youtube.com/watch?v=4hWlDKzn7tA).
 
-## Testing MIDI messages over BLE to tablet/smartphone
-The goal with this test is to continuously send the same MIDI note over BLE to a tablet, so that this note can be synthesized in the phone.
+# Midi on Arduino
+Arduino has a [MIDI library](https://playground.arduino.cc/Main/MIDILibrary). By following this tutorial [here](http://bvavra.github.io/MIDI_Accordion/sending-midi/), I was able to send continuous MIDI messages (rate: 1 per second) to my computer via serial. The code is available [here](../sketches/midi-demo/midi-demo.ino).
 
-I STOPPED HERE!
+**Sidenote:** If I was to synthesize these notes on the computer, we would need someone like [the Hairless MIDI](http://projectgus.github.io/hairless-midiserial/) to route messages from serial to your MIDI synth. For my purposes, won't bother doing that.
+
+# MIDI BLE from Arduino to a Mobile
+Afterwards, my goal moved towards replicating the same 'MIDI on Arduino' example now over BLE to a mobile device, which will synthesize the notes.
+
+It wasn't hard. The default MIDI example available on the Adafruits'BLE library seemed to have worked (almost) out-of-the-box: In the [configurations](https://learn.adafruit.com/introducing-the-adafruit-bluefruit-le-uart-friend/configuration), I needed to use Software Serial (I have an Arduino Uno); Also needed to use Adafruit's BLE connect app to connect to the board; To route the MIDI to GarageBand, I used the [MidiMttr](https://itunes.apple.com/us/app/midimittr/id925495245?mt=8) app. I think that was all. The sketch used is available [here](../sketches/midi-ble/midi-ble).
+
+**Sidenote:** Very often, I get errors when uploading the sketches to the board. These errors differ: Sometimes I get "Couldn't factory reset"; Other times, I get "Could not enable MIDI". Sometime, fortunately, it works fine (i.e. "waiting for a connection"). Need to study why that happens.
