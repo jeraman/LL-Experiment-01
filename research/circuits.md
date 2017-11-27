@@ -13,6 +13,7 @@ That said, these are the steps to get the 'pedal' working:
 - [x] MIDI BLE from Arduino to a Mobile;
 - [x] Connect the button;
 - [x] Connect the two potentiometers;
+- [ ] Writing the Arduino code;
 - [ ] Test all together with independent power;
 - [ ] Record a video of the prototype;
 
@@ -65,3 +66,21 @@ I've modified this demo to work with the LEDs: if the button is pressed, the LED
 
 ## Connect the potentiometers
 Also very simple step. Just follow this [example here](https://www.arduino.cc/en/tutorial/potentiometer). The code example is available [here](../sketches/potentiometers/potentiometers.ino).
+
+## Writing the Arduino code
+Once done with the hardware part, it's time to code the Arduino Sketch.
+
+The functionalities implemented by the looper are:
+- **Record:** Press the red button once (Pre-requisite: 'Clear');
+- **Stop:** Press the red button twice;
+- **Play:** Press the red button once (Pre-requisite: 'Stop');
+- **Overdub:** Press the red button once (Pre-requisite: 'Play');
+- **Clear:** Press & Hold the red button for 2 seconds (Pre-requisite: 'Stop');
+- **Undo/Redo:** Press & Hold the red button for 2 seconds (Pre-requisite: 'Play' or 'Overdub').
+
+Therefore, there are three types of events the interface needs to send:
+- Simple Press button;
+- Press button twice (in less than a second);
+- Press & Hold (during 2 seconds).
+
+Todo tomorrow!

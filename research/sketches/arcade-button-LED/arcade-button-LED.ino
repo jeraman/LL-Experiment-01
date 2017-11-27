@@ -29,16 +29,15 @@ const int buttonLED = 13;     // the number of the pushbutton pin
 
 // variables will change:
 int buttonState = 0;         // variable for reading the pushbutton status
-bool onOffButton = false;
 
 void setup() {
   while (!Serial);  // required for Flora & Micro
   delay(500);
-  
   Serial.begin(115200);
   
   // initialize the LED pin as an output:
   pinMode(buttonLED, OUTPUT);
+  
   // initialize the pushbutton pin as an input:
   pinMode(buttonPin, INPUT);
 
@@ -50,14 +49,15 @@ void loop() {
   buttonState = digitalRead(buttonPin);
 
   // check if the pushbutton is pressed. If it is, the buttonState is HIGH:
-  if (buttonState == HIGH) {
+  if (buttonState == HIGH)
     // turn LED on:
     digitalWrite(buttonLED, HIGH);
     
-  } else {
+   else 
     // turn LED off:
     digitalWrite(buttonLED, LOW);
-  }
+  
 
-  //delay(500);
+  Serial.print("Button: ");
+  Serial.println(buttonState);
 }
