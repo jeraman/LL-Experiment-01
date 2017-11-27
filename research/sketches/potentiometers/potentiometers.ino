@@ -12,13 +12,11 @@
  *
  */
 
-int pot1Pin = 1;    // select the input pin for the potentiometer
-int pot2Pin = 4;    // select the input pin for the potentiometer
+int val1 = 0;       // variable to store the value coming from the sensor
+int val2 = 0;       // variable to store the value coming from the sensor
 
 int ledPin = 13;   // select the pin for the LED
 
-int val1 = 0;       // variable to store the value coming from the sensor
-int val2 = 0;       // variable to store the value coming from the sensor
 
 void setup() {
   while (!Serial);  // required for Flora & Micro
@@ -26,21 +24,24 @@ void setup() {
   
   Serial.begin(115200);
 
-  pinMode(ledPin, OUTPUT);  // declare the ledPin as an OUTPUT
+  pinMode(LED_BUILTIN, OUTPUT);  // declare the ledPin as an OUTPUT
 
   Serial.println("Arduino initialized");
 }
 
 void loop() {
-  val1 = analogRead(pot1Pin);    // read the value from the sensor
-  //val2 = analogRead(pot2Pin);    // read the value from the sensor
+  val1 = analogRead(A1);    // read the value from the sensor
+  val2 = analogRead(A4);  // read the value from the sensor
   
-  digitalWrite(ledPin, HIGH);  // turn the ledPin on
-  delay(val1);                  // stop the program for some time
-  digitalWrite(ledPin, LOW);   // turn the ledPin off
-  delay(val1);                  // stop the program for some time
+  digitalWrite(LED_BUILTIN, HIGH);      // turn the ledPin on
+  delay(val1);                          // stop the program for some time
+  digitalWrite(LED_BUILTIN, LOW);   // turn the ledPin off
+  delay(val1);                          // stop the program for some time
 
-  Serial.println("val pot 1: " + val1);
-  //delay(10);   
-  //Serial.println("val pot 2: " + val2);
+  Serial.print("val pot 1: ");
+  Serial.println(val1);
+  Serial.print("val pot 2: ");
+  Serial.println(val2);
+  
+  delay(1);   
 }
