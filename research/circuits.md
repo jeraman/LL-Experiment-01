@@ -59,4 +59,10 @@ I think that was all. The sketch used is available [here](../sketches/midi-ble/m
 **Sidenote 2:** Need to study how to make the BLE connection more reliable & straightforward (e.g. no need of external Adafruit's or MidiMttr app).
 
 # Connecting the button
-Need to check [this](https://learn.adafruit.com/arcade-button-control-box/wiring)!
+Regarding [Arcade buttons I use](https://www.adafruit.com/product/3489), there are two pairs of connectors: one pair for controlling the LEDs, another for using the button itself.
+
+For the LED connectors, [specification](https://www.adafruit.com/product/3489#technical-details-anchor) says there is no need to use resistors so that it is possible to connect the button directly to the 5v and GND (these have built-in 1k resistors).
+
+For the button, you can follow [this basic tutorial ](https://www.arduino.cc/en/Tutorial/Button) in order to read the button inside Arduino. Here, I used a 10k resistor.
+
+I've modified this demo to work with the LEDs: if the button is pressed, the LED will light up. The code is [here](../sketches/arcade-button-LED/arcade-button-LED/ino).
