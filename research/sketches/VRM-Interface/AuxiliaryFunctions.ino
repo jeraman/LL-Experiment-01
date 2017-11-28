@@ -1,26 +1,3 @@
-/*
-   VRM INTERFACE PROTOTYPE
-   Name: Jeronimo Barbosa
-   Date: November 27 2017.
-*/
-
-//arduino ports
-const int buttonPin  = 2;
-const int buttonLED  = 13;
-const int  pot1port  = A1;
-const int  pot2port  = A4;
-
-//button control variables
-int   buttonState     = 0;
-int   buttonLastState = 0;
-float elapsedDownTime = 0;
-bool  isButtonLightOn = false;
-unsigned long  buttonPressedTimestamp = 0;
-
-//potentiometer variables
-int  pot1val         = 0;
-int  pot2val         = 0;
-
 
 //functions
 void turnOnOffLED()
@@ -71,19 +48,21 @@ bool isSecondTimeButtonPressedInASecond()
 void resetButtonDownCounter()
 {
   buttonPressedTimestamp = 0;
-  elapsedDownTime = 0;
+  elapsedDownTime        = 0;
 }
 
 
 void arcadeButtonControl()
 {
+  buttonState = digitalRead(buttonPin);
+
   if (buttonHasBeenPressed())
   {
     turnOnOffLED();
 
     if (isSecondTimeButtonPressedInASecond())
       buttonPressedTwiceEvent();
-    else  
+    else
       buttonPressedEvent();
   }
 
@@ -92,15 +71,42 @@ void arcadeButtonControl()
   else if (elapsedDownTime >= 2.0)
     resetButtonDownCounter();
 
-
   buttonLastState = buttonState;
+}
+
+
+bool hasPotentiometerValueChanged (int value, int lastValue)
+{
+  return (abs(value - lastValue) > 1);
 }
 
 
 void potentiometersControl()
 {
-  pot1val = analogRead(A1);    // read the value from the sensor
-  pot2val = analogRead(A4);  // read the value from the sensor
+  pot1val = analogRead(pot1port);
+  pot2val = analogRead(pot2port);
+
+  if (hasPotentiometerValueChanged(pot1val, lastPot1val))  potentiometer1Event();
+  if (hasPotentiometerValueChanged(pot2val, lastPot2val))  potentiometer2Event();
+
+  lastPot1val = pot1val;
+  lastPot2val = pot2val;
+}
+
+
+void potentiometer1Event()
+{
+  Serial.print("Pot 1: ");
+  Serial.println((float)(pot1val/1023.));
+  sendFeedbackMIDI((float)(pot1val/1023.));
+}
+
+
+void potentiometer2Event()
+{
+  Serial.print("Pot 2: ");
+  Serial.println((float)(pot2val/1023.));
+  sendPhasingMIDI((float)(pot2val/1023.));
 }
 
 
@@ -108,6 +114,7 @@ void buttonPressedEvent()
 {
   buttonPressedTimestamp = millis();
   Serial.println("Red button pressed!");
+  sendButtonPressMIDI();
 }
 
 
@@ -115,6 +122,7 @@ void buttonPressedTwiceEvent()
 {
   resetButtonDownCounter();
   Serial.println("Red button pressed TWICE in a second!");
+  sendButtonPressTwiceMIDI();
 }
 
 
@@ -122,6 +130,7 @@ void buttonPressedAndHoldEvent()
 {
   resetButtonDownCounter();
   Serial.println("Red button pressed and HOLD for 2 seconds!");
+  sendButtonHoldMIDI();
 }
 
 
@@ -137,29 +146,4 @@ void debugRaw()
   Serial.print("   pot 2: ");
   Serial.print(pot2val);
   Serial.println();
-}
-
-//iterative loop
-void setup()
-{
-  while (!Serial);  // required for Flora & Micro
-  delay(500);
-  Serial.begin(115200);
-  pinMode(buttonLED, OUTPUT);
-  pinMode(buttonPin, INPUT);
-
-  Serial.println("Arduino initialized");
-}
-
-
-void loop()
-{
-  buttonState = digitalRead(buttonPin);
-
-  arcadeButtonControl();
-  potentiometersControl();
-  //debugRaw();
-
-
-  delay(10);
 }

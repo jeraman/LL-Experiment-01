@@ -4,7 +4,8 @@ As materials, we are going to need:
 - A [Bluefruit board](https://learn.adafruit.com/introducing-the-adafruit-bluefruit-le-uart-friend/configuration) (Bluefruit LE UART Friend);
 - A [button](https://www.adafruit.com/product/3489);
 - Two [10k potentiometers](https://www.digikey.com/product-detail/en/tt-electronics-bi/P0915N-FC15BR10K/987-1649-ND/4780740) with [plastic knobs](https://www.adafruit.com/product/2047);
-- A bunch of jumpers;
+- One 10k resistor (you can find one inside [resistor kits](https://www.sparkfun.com/products/10969));
+- A bunch of [jumpers](https://www.sparkfun.com/products/14284);
 
 That said, these are the steps to get the 'pedal' working:
 - [x] Get started on Arduino;
@@ -14,7 +15,6 @@ That said, these are the steps to get the 'pedal' working:
 - [x] Connect the button;
 - [x] Connect the two potentiometers;
 - [x] Writing the Arduino code;
-- [ ] Test all together with independent power;
 - [ ] Record a video of the prototype;
 
 ## Get started on Arduino!
@@ -40,7 +40,7 @@ PS: Detailed documentation of AT commands can be found [here](https://learn.adaf
 You can test communication with your Android/iOs doing as demonstrate in [this video](https://www.youtube.com/watch?v=4hWlDKzn7tA).
 
 ## Midi on Arduino
-Arduino has a [MIDI library](https://playground.arduino.cc/Main/MIDILibrary). By following this tutorial [here](http://bvavra.github.io/MIDI_Accordion/sending-midi/), I was able to send continuous MIDI messages (rate: 1 per second) to my computer via serial. The code is available [here](../sketches/midi-demo/midi-demo.ino).
+Arduino has a [MIDI library](https://playground.arduino.cc/Main/MIDILibrary). By following this tutorial [here](http://bvavra.github.io/MIDI_Accordion/sending-midi/), I was able to send continuous MIDI messages (rate: 1 per second) to my computer via serial. The code is available [here](./sketches/midi-demo/midi-demo.ino).
 
 **Sidenote:** If I was to synthesize these notes on the computer, we would need someone like [the Hairless MIDI](http://projectgus.github.io/hairless-midiserial/) to route messages from serial to your MIDI synth. For my purposes, won't bother doing that.
 
@@ -53,7 +53,7 @@ It wasn't hard. The default MIDI example available on the Adafruits'BLE library 
 - Also needed to use Adafruit's BLE connect app to connect to the board;
 - To route the MIDI to GarageBand, I used the [MidiMttr](https://itunes.apple.com/us/app/midimittr/id925495245?mt=8) app.
 
-I think that was all. The sketch used is available [here](../sketches/midi-ble/midi-ble).
+I think that was all. The sketch used is available [here](./sketches/midi-ble/midi-ble.ino).
 
 **Sidenote 1:** Very often, I get errors when uploading the sketches to the board. These errors differ: Sometimes I get "Couldn't factory reset"; Sometimes, I get "Could not enable MIDI". Sometimes, fortunately, it works fine (i.e. "waiting for a connection"). Need to study why that happens.
 
@@ -62,13 +62,13 @@ I think that was all. The sketch used is available [here](../sketches/midi-ble/m
 ## Connecting the button
 Regarding [Arcade buttons I use](https://www.adafruit.com/product/3489), there are two pairs of connectors: one pair for controlling the LEDs, another for using the button itself. For the LED connectors, [specification](https://www.adafruit.com/product/3489#technical-details-anchor) says there is no need to use resistors so that it is possible to connect the button directly to the 5v and GND (these have built-in 1k resistors).vFor the button, you can follow [this basic tutorial ](https://www.arduino.cc/en/Tutorial/Button) in order to read the button inside Arduino. Here, I used a 10k resistor.
 
-I've modified this demo to work with the LEDs: if the button is pressed, the LED will light up. The code is [here](../sketches/arcade-button-LED/arcade-button-LED/ino).
+I've modified this demo to work with the LEDs: if the button is pressed, the LED will light up. The code is [here](./sketches/arcade-button-LED/arcade-button-LED.ino).
 
 ## Connect the potentiometers
-Also very simple step. Just follow this [example here](https://www.arduino.cc/en/tutorial/potentiometer). The code example is available [here](../sketches/potentiometers/potentiometers.ino).
+Also very simple step. Just follow this [example here](https://www.arduino.cc/en/tutorial/potentiometer). The code example is available [here](./sketches/potentiometers/potentiometers.ino).
 
 ## Writing the Arduino code
-Once done with the hardware part, it's time to code the Arduino Sketch.
+Once done with the hardware part, it's time to code a Arduino Sketch that will combine all previous points MIDI BLE, the button, and the potentiometers.
 
 The functionalities implemented by the looper are:
 - **Record:** Press the red button once (Pre-requisite: 'Clear');
@@ -78,177 +78,9 @@ The functionalities implemented by the looper are:
 - **Clear:** Press & Hold the red button for 2 seconds (Pre-requisite: 'Stop');
 - **Undo/Redo:** Press & Hold the red button for 2 seconds (Pre-requisite: 'Play' or 'Overdub').
 
-Therefore, there are three types of events the interface needs to send:
+Therefore, there are three types of events the interface (thus, our sketch) needs to support:
 - Simple Press button;
 - Press button twice (in less than a second);
 - Press & Hold (during 2 seconds).
 
-The result is the following Arduino Sketch (also available [here](../sketches/vrm-interface/vrm-interface.ino)):
-
-```c++
-/*
-   VRM INTERFACE PROTOTYPE
-   Name: Jeronimo Barbosa
-   Date: November 27 2017.
-*/
-
-//arduino ports
-const int buttonPin  = 2;
-const int buttonLED  = 13;
-const int  pot1port  = A1;
-const int  pot2port  = A4;
-
-//button control variables
-int   buttonState     = 0;
-int   buttonLastState = 0;
-float elapsedDownTime = 0;
-bool  isButtonLightOn = false;
-unsigned long  buttonPressedTimestamp = 0;
-
-//potentiometer variables
-int  pot1val         = 0;
-int  pot2val         = 0;
-
-
-//functions
-void turnOnOffLED()
-{
-  isButtonLightOn = !isButtonLightOn;
-
-  if (isButtonLightOn)
-    digitalWrite(buttonLED, HIGH);
-  else
-    digitalWrite(buttonLED, LOW);
-}
-
-
-bool isButtonDown()
-{
-  return (buttonState == 1);
-}
-
-
-bool buttonHasChangedState()
-{
-  return (buttonState != buttonLastState);
-}
-
-
-bool buttonHasBeenPressed()
-{
-  return (isButtonDown() && buttonHasChangedState());
-}
-
-
-bool buttonHasBeenDownForTwoSeconds()
-{
-  if (buttonPressedTimestamp == 0) return false;
-  elapsedDownTime = (millis() - buttonPressedTimestamp) / 1000;
-  return (isButtonDown() && !buttonHasChangedState() && elapsedDownTime >= 2.0);
-}
-
-
-bool isSecondTimeButtonPressedInASecond()
-{
-  if (buttonPressedTimestamp == 0) return false;
-  elapsedDownTime = (millis() - buttonPressedTimestamp) / 1000;
-  return (elapsedDownTime < 1.0);
-}
-
-
-void resetButtonDownCounter()
-{
-  buttonPressedTimestamp = 0;
-  elapsedDownTime = 0;
-}
-
-
-void arcadeButtonControl()
-{
-  if (buttonHasBeenPressed())
-  {
-    turnOnOffLED();
-
-    if (isSecondTimeButtonPressedInASecond())
-      buttonPressedTwiceEvent();
-    else  
-      buttonPressedEvent();
-  }
-
-  if (buttonHasBeenDownForTwoSeconds())
-    buttonPressedAndHoldEvent();
-  else if (elapsedDownTime >= 2.0)
-    resetButtonDownCounter();
-
-
-  buttonLastState = buttonState;
-}
-
-
-void potentiometersControl()
-{
-  pot1val = analogRead(A1);    // read the value from the sensor
-  pot2val = analogRead(A4);  // read the value from the sensor
-}
-
-
-void buttonPressedEvent()
-{
-  buttonPressedTimestamp = millis();
-  Serial.println("Red button pressed!");
-}
-
-
-void buttonPressedTwiceEvent()
-{
-  resetButtonDownCounter();
-  Serial.println("Red button pressed TWICE in a second!");
-}
-
-
-void buttonPressedAndHoldEvent()
-{
-  resetButtonDownCounter();
-  Serial.println("Red button pressed and HOLD for 2 seconds!");
-}
-
-
-void debugRaw()
-{
-  if (isButtonLightOn)
-    Serial.print("Light On! ");
-  else
-    Serial.print("Light Off... ");
-
-  Serial.print("   pot 1: ");
-  Serial.print(pot1val);
-  Serial.print("   pot 2: ");
-  Serial.print(pot2val);
-  Serial.println();
-}
-
-//iterative loop
-void setup()
-{
-  while (!Serial);  // required for Flora & Micro
-  delay(500);
-  Serial.begin(115200);
-  pinMode(buttonLED, OUTPUT);
-  pinMode(buttonPin, INPUT);
-
-  Serial.println("Arduino initialized");
-}
-
-
-void loop()
-{
-  buttonState = digitalRead(buttonPin);
-
-  arcadeButtonControl();
-  potentiometersControl();
-  //debugRaw();
-
-
-  delay(10);
-}
-```
+The resulting Arduino Sketch is available [here](./sketches/vrm-interface/vrm-interface.ino)).
