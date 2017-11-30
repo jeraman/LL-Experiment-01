@@ -4,8 +4,10 @@ As materials, we are going to need:
 - A [Bluefruit board](https://learn.adafruit.com/introducing-the-adafruit-bluefruit-le-uart-friend/configuration) (Bluefruit LE UART Friend);
 - A [button](https://www.adafruit.com/product/3489);
 - Two [10k potentiometers](https://www.digikey.com/product-detail/en/tt-electronics-bi/P0915N-FC15BR10K/987-1649-ND/4780740) with [plastic knobs](https://www.adafruit.com/product/2047);
-- One 10k resistor (you can find one inside [resistor kits](https://www.sparkfun.com/products/10969));
+- One 10k resistor (you can find such resistor inside a [resistor kit like this one](https://www.sparkfun.com/products/10969));
 - A bunch of [jumpers](https://www.sparkfun.com/products/14284);
+- A battery holder;
+- A rocker switch.
 
 That said, these are the steps to get the 'pedal' working:
 - [x] Get started on Arduino;
@@ -14,7 +16,9 @@ That said, these are the steps to get the 'pedal' working:
 - [x] MIDI BLE from Arduino to a Mobile;
 - [x] Connect the button;
 - [x] Connect the two potentiometers;
+- [x] Connect battery and rocker switch;
 - [x] Writing the Arduino code;
+- [ ] Test the circuit with the VRM app;
 - [ ] Record a video of the prototype;
 
 ## Get started on Arduino!
@@ -67,6 +71,9 @@ I've modified this demo to work with the LEDs: if the button is pressed, the LED
 ## Connect the potentiometers
 Also very simple step. Just follow this [example here](https://www.arduino.cc/en/tutorial/potentiometer). The code example is available [here](./sketches/potentiometers/potentiometers.ino).
 
+## Connect battery and rocker switch
+Simple as [this](http://www.instructables.com/id/Powering-Arduino-with-a-Battery/)!
+
 ## Writing the Arduino code
 Once done with the hardware part, it's time to code a Arduino Sketch that will combine all previous points MIDI BLE, the button, and the potentiometers.
 
@@ -83,4 +90,7 @@ Therefore, there are three types of events the interface (thus, our sketch) need
 - Press button twice (in less than a second);
 - Press & Hold (during 2 seconds).
 
-The resulting Arduino Sketch is available [here](./sketches/vrm-interface/vrm-interface.ino)).
+The resulting Arduino Sketch is available [here](./sketches/VRM-Interface/).
+
+## Test the circuit with the VRM app
+Almost there! Now we need to test this circuit with the VRM app.

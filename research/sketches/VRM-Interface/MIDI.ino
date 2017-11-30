@@ -55,7 +55,6 @@ bool isConnected = false;
 void sendFeedbackMIDI (float value)
 {
   value = floor(value*127);
-  //0x90 = Channel 1 MIDI Note On
   midi.send(0x90, value, 0x64);
 }
 
@@ -63,29 +62,28 @@ void sendFeedbackMIDI (float value)
 void sendPhasingMIDI (float value)
 {
   value = floor(value*127);
-  //0x80 = Channel 1 MIDI Note Off
-  midi.send(0x80, value, 0x64);
+  midi.send(0x91, value, 0x64);
 }
 
 
 void sendButtonPressMIDI ()
 {
  //0xC0 = Channel 1 Program Change
-  midi.send(0xC0, 0); 
+  midi.send(0xC2, 0); 
 }
 
 
 void sendButtonPressTwiceMIDI ()
 {
  //0xC0 = Channel 1 Program Change
-  midi.send(0xC0, 1); 
+  midi.send(0xC3, 0); 
 }
 
 
 void sendButtonHoldMIDI ()
 {
  //0xC0 = Channel 1 Program Change
-  midi.send(0xC0, 2); 
+  midi.send(0xC4, 0); 
 }
 
 
