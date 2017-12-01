@@ -1,4 +1,16 @@
 # Prototyping Circuitry
+[![video-demo](./images/video.jpg)](https://www.youtube.com/watch?v=3yMFNxZIu5M)
+
+This tutorial describes how to build a DIY controller for the Voice Reaping Machine. As this controller is intended to replicate the controls of the Boss RC-1, it supports four types of events:
+- Simple Press button;
+- Press button twice (in less than a second);
+- Press & Hold (during 2 seconds);
+- Knobs events (both 'persistence' and 'phasing').
+
+The final circuit is going to look like the following:
+![wiring](./images/circuit.jpg)
+
+## Materials & Steps
 As materials, we are going to need:
 - A 5v Arduino;
 - A [Bluefruit board](https://learn.adafruit.com/introducing-the-adafruit-bluefruit-le-uart-friend/configuration) (Bluefruit LE UART Friend);
@@ -18,8 +30,8 @@ That said, these are the steps to get the 'pedal' working:
 - [x] Connect the two potentiometers;
 - [x] Connect battery and rocker switch;
 - [x] Writing the Arduino code;
-- [ ] Test the circuit with the VRM app;
-- [ ] Record a video of the prototype;
+- [x] Test the circuit with the VRM app;
+- [x] Record a video of the prototype;
 
 ## Get started on Arduino!
 Because there was no cable (get it ASAP!), decided to use my old Arduino Uno (still working!) instead of the brand new Arduino Micro. I also updated Arduino's IDE software.
@@ -77,20 +89,9 @@ Simple as [this](http://www.instructables.com/id/Powering-Arduino-with-a-Battery
 ## Writing the Arduino code
 Once done with the hardware part, it's time to code a Arduino Sketch that will combine all previous points MIDI BLE, the button, and the potentiometers.
 
-The functionalities implemented by the looper are:
-- **Record:** Press the red button once (Pre-requisite: 'Clear');
-- **Stop:** Press the red button twice;
-- **Play:** Press the red button once (Pre-requisite: 'Stop');
-- **Overdub:** Press the red button once (Pre-requisite: 'Play');
-- **Clear:** Press & Hold the red button for 2 seconds (Pre-requisite: 'Stop');
-- **Undo/Redo:** Press & Hold the red button for 2 seconds (Pre-requisite: 'Play' or 'Overdub').
-
-Therefore, there are three types of events the interface (thus, our sketch) needs to support:
-- Simple Press button;
-- Press button twice (in less than a second);
-- Press & Hold (during 2 seconds).
-
 The resulting Arduino Sketch is available [here](./sketches/VRM-Interface/).
 
 ## Test the circuit with the VRM app
-Almost there! Now we need to test this circuit with the VRM app.
+After some updates in the source code, and some fine tuning so that the visuals could match the physical controls, I was able to test this circuit with the VRM app! ;)
+
+The final result can be watched in [this video](https://www.youtube.com/watch?v=3yMFNxZIu5M). Have fun! ;)
