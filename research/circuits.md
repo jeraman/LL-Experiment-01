@@ -7,10 +7,11 @@ This tutorial describes how to build a DIY controller for the Voice Reaping Mach
 - Press & Hold (during 2 seconds);
 - Knobs events (both 'persistence' and 'phasing').
 
-The final circuit is going to look like the following:
+## Materials & Steps
+The circuit is looks like the following:
+
 ![wiring](./images/circuit.jpg)
 
-## Materials & Steps
 As materials, we are going to need:
 - A 5v Arduino;
 - A [Bluefruit board](https://learn.adafruit.com/introducing-the-adafruit-bluefruit-le-uart-friend/configuration) (Bluefruit LE UART Friend);
@@ -18,8 +19,8 @@ As materials, we are going to need:
 - Two [10k potentiometers](https://www.digikey.com/product-detail/en/tt-electronics-bi/P0915N-FC15BR10K/987-1649-ND/4780740) with [plastic knobs](https://www.adafruit.com/product/2047);
 - One 10k resistor (you can find such resistor inside a [resistor kit like this one](https://www.sparkfun.com/products/10969));
 - A bunch of [jumpers](https://www.sparkfun.com/products/14284);
-- A battery holder;
-- A rocker switch.
+- A [battery snap holder](https://www.sparkfun.com/products/91);
+- A [rocker switch](https://www.sparkfun.com/products/8837).
 
 That said, these are the steps to get the 'pedal' working:
 - [x] Get started on Arduino;
@@ -32,6 +33,8 @@ That said, these are the steps to get the 'pedal' working:
 - [x] Writing the Arduino code;
 - [x] Test the circuit with the VRM app;
 - [x] Record a video of the prototype;
+
+Each step is detailed in the following subsections.
 
 ## Get started on Arduino!
 Because there was no cable (get it ASAP!), decided to use my old Arduino Uno (still working!) instead of the brand new Arduino Micro. I also updated Arduino's IDE software.
