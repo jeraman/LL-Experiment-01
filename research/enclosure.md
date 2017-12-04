@@ -21,6 +21,12 @@ Based on the [official measures of that enclosure](https://www.hammfg.com/files/
 Based on the paper prototype, I've built the following cardboard prototype:
 
 ![cardboard-prototype](./images/cardboard-prototype.jpg)
+![box3](./images/box3.jpg)
+
+## Result
+Can be found here:
+![box2](./images/box2.jpg)
+![box3](./images/box3.jpg)
 
 ## Darryl suggestions
 They are:
@@ -28,8 +34,8 @@ They are:
 - Use stranded wires;
 - Use 90º jacks and lightning cables for saving space;
 
-Next steps:
-- Test how to power the iPad;
+## Next steps
+- Test how to power the iPad 7 the circuits;
 - Test sound input/output on the iPad;
 - Power on off button;
 - Solder final circuit on Perfboard.
