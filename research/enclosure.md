@@ -1,4 +1,4 @@
-# Enclosure
+# Enclosure prototyping
 ![box1](./images/box1.jpg)
 This file deals with the prototyping of the enclosure. The steps I followed to build this enclosure are detailed in the next subsections.
 
