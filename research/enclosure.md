@@ -4,10 +4,14 @@ This file deals with the prototyping of the enclosure. The steps I followed to b
 
 ![gif](./images/test.gif)
 
+## Initial sketch
+My initial sketch was the following:
+![initial-sketch](./images/initial-sketch.jpg)
+
 ## Finding a potential box as baseline
 First, Edu pointed [Hammond website](https://www.hammfg.com) containing has several different types of enclosures that can be used in DIY projects.
 
-Based on the measures of the iPad, I found three boxes (list [here](https://docs.google.com/spreadsheets/d/1D_RBQ6R6dxn2w-e68LABvtBa7pAwvGjO6KwVCHRj6x4/edit?usp=sharing)) that could potentially work for the project. After discussing them with Darryl, decided to start prototyping using [this one here](https://www.hammfg.com/part/1441-22BK3CWW?referer=1234) as base deadline.
+Based on the measures of the iPad, I found three boxes (list [here](https://docs.google.com/spreadsheets/d/1D_RBQ6R6dxn2w-e68LABvtBa7pAwvGjO6KwVCHRj6x4/edit?usp=sharing)) that could potentially work for the project. After discussing them with Darryl, decided to start prototyping using [this one here](https://www.hammfg.com/part/1441-22BK3CWW?referer=1234) as baseline.
 
 The measures I used are:
 ![enclosure-measures](./images/enclosure-measures.jpg)
