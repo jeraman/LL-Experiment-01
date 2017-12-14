@@ -98,3 +98,16 @@ The resulting Arduino Sketch is available [here](./sketches/VRM-Interface/).
 After some updates in the source code, and some fine tuning so that the visuals could match the physical controls, I was able to test this circuit with the VRM app! ;)
 
 The final result can be watched in [this video](https://www.youtube.com/watch?v=3yMFNxZIu5M). Have fun! ;)
+
+# Update: Port to USB
+In order to remove intermediary software (Adafruit's BLE connect app) and simplify power supply, I've decided to replace the BLE module by standard USB connection.
+
+After looking for recent references, I've found [this one here](http://www.instructables.com/id/Custom-Arduino-MIDI-Controller/) that seems to work. If you need further info, [this link](https://github.com/tttapa/MIDI_controller/wiki/MIDI-over-USB) covers different approaches to MIDI-over-USB in Arduino.
+
+My case, in short:
+1. Get an MIDI-over-USB compatible Arduino (in my case, the Arduino Micro);
+2. Test the device with the 'Blink' example;
+3. Install the MIDIUSB library, available in Arduino IDE library manager;
+4. Use this sketch here as a test.
+
+And we are ready to go! ;)
