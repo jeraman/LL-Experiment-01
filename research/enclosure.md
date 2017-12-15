@@ -16,39 +16,54 @@ The measures I used are:
 ## Iteration 1: Paper prototype
 Based on the [official measures of that enclosure](https://www.hammfg.com/files/parts/pdf/1441-22BK3CWW.pdf), I did a paper prototype. First, I cut an letter-sized paper on the exact dimensions of the box. Then I have cut out holes in the size of the iPad screen, the buttons, and the potentiometers. The result is the following:
 
-![paper-prototype](./images/paper-prototype.jpg)
+![paper-prototype-v1](./images/paper-prototype-v1.jpg)
 
 ## Iteration 2: Cardboard prototype
 Based on the paper prototype, I've built the following cardboard prototype:
 
-![cardboard-prototype](./images/cardboard-prototype.jpg)
+![cardboard-prototype-v1](./images/cardboard-prototype-v1.jpg)
 ![box3](./images/box3.jpg)
 ![box1](./images/box1.jpg)
-![box2](./images/box2.jpg)
-![gif](./images/test.gif)
 
 This prototype provided a more concrete idea of the general look & feel. However, some important aspects remained unexplored. Namely:
 
 ### How to place the iPad under the top structure?
-Here, I considered different solutions. One option would be [Jeffrey Stephenson's iPad TV box](http://slipperyskip.com/page38.html) (similar solution [here](https://www.youtube.com/watch?v=WuSLoM4i7Og)). Another would be to create a 'bed' on wood, and then cover it with a thin layer of plexiglass (such as [here](https://www.youtube.com/watch?v=Mjn0Njk-Nx8) and [here](https://www.youtube.com/watch?v=dWabuJQFBD0))
-
-After a while, I decided to go with a sandwich of layers built with laser cutters, as shown in the image below:
+Here, I considered different solutions. One option would be [Jeffrey Stephenson's iPad TV box](http://slipperyskip.com/page38.html) (similar solution [here](https://www.youtube.com/watch?v=WuSLoM4i7Og)). Another would be to create a 'bed' on wood, and then cover it with a thin layer of plexiglass (such as [here](https://www.youtube.com/watch?v=Mjn0Njk-Nx8) and [here](https://www.youtube.com/watch?v=dWabuJQFBD0)). After a while, I decided to go with a sandwich of layers built with laser cutters, as shown in the image below:
 ![sandwich](./images/sandwich.jpg)
 
 ### How to hold still other hardware (i.e. FocusRite, USB hub, circuit) inside the enclosure?
-Brainstormed solutions:
-- Sandwiching and against top and bottom parts?
-- 3D printed case glued to bottom part?
-- Wooden blocks to allow sandwich of the USB hub?
-
-In the end, I think the easiest solution will be sandwiching only the Focusrite (with maybe some carving in the top). In my tests, the USB hub seems to stand still when all cables are connected.
+Brainstormed solutions included: Sandwiching and against top and bottom parts; 3D printed case glued to bottom part; and wooden blocks to allow sandwich of the USB hub. In the end, I the easiest solution was sandwiching only the FocusRite and some carving in the bottom layer, so that it can stand still. In my tests, the USB hub seems to stand still when all cables are connected.
 
 ### How to properly fix & separate bottom and upper layers?
-Use [standoffs](https://www.mcmaster.com/#spacers-and-standoffs/=b5fq5j), the same strategy used by Ivan on its first Mitt prototype. In email, he said I could find them on [Home Depot Beaubien](https://www.homedepot.ca/en/home.html).
+Use [standoffs/coupling nuts](https://www.mcmaster.com/#spacers-and-standoffs/=b5fq5j), the same strategy used by Ivan on its first Mitt prototype. In email, he said I could find them on [Home Depot Beaubien](https://www.homedepot.ca/en/home/categories/building-materials/hardware/fasteners/nuts/coupling-nuts.html), where I bought them.
 
-## Solid prototype
-Defined that, I'll try to move on to something more solid. Regarding this, I found a bunch of useful resources at [ITP's fabrication courses webpage](https://itp.nyu.edu/fab/).
+As future reference, I was also able to find the at [Digikey](https://www.digikey.ca/products/en/hardware-fasteners-accessories/board-spacers-standoffs/582) Good models are [this one](https://www.digikey.ca/product-detail/en/wurth-electronics-inc/970500471/732-10662-ND/6174882) and [this one](https://www.digikey.ca/product-detail/en/wurth-electronics-inc/970500361/732-10661-ND/6174881), as they have approximately the height of the FocusRite. Their thread size is M3.
+
+## Iteration 3: Paper prototype
+Back to paper prototype to investigate the solutions proposed above:
+
+![paper-prototype-v2](./images/paper-prototype-v2.jpg)
+
+## Iteration 4: Cardboard prototype
+The paper prototype led to a higher fidelity cardboard prototype. First, I replicated the paper cuts into the cardboard:
+![cardboard-prototype-v2](./images/cardboard-prototype-v2.jpg)
+
+Then, I successfully tested the 'sandwich' that will hold the iPad:
+![ipad-sandwich](./images/ipad-sandwich.jpg)
+
+This version also allowed me to remove the protoboard, and test the electronics as they are going to be in the final prototype. That's what I've come up with:
+![soldering-electronics](./images/soldering-electronics.jpg)
+
+Then, I tried the standoffs:
+![soldering-electronics](./images/soldering-electronics.jpg)
+
+Finally, I added the USB hub and the FocusRite as if this was the final looper. The result seems quite solid, as you can see below:
+![soldering-electronics](./images/soldering-electronics.jpg)
+
+I loved this version, as it allowed to test almost every aspect of the final looper!
+
+## Iteration 5:  Plexiglass prototype
+After the last cardboard prototype, I decided to move on to something more solid: a plexiglass box, prepared with laser cutting. Regarding this, I found a bunch of useful resources at [ITP's fabrication courses webpage](https://itp.nyu.edu/fab/).
 
 For this stage, I'll need to investigate:
 1. Drawing an SVG model for the top structure for the 3D printing;
-2. Solder input (i.e. button and potentiometers) and circuit into their final place;

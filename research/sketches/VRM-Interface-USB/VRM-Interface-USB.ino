@@ -27,8 +27,8 @@ float  lastPot2val     = 0;
 //iterative loop
 void setup()
 {
-  while (!Serial);  // required for Flora & Micro
-  delay(500);
+  //while (!Serial);  // required for Flora & Micro
+  //delay(500);
   Serial.begin(115200);
   pinMode(buttonLED, OUTPUT);
   pinMode(buttonPin, INPUT);

@@ -9,6 +9,7 @@ void noteOn(byte channel, byte pitch, byte velocity)
 {
   midiEventPacket_t noteOn = {0x09, 0x90 | channel, pitch, velocity};
   MidiUSB.sendMIDI(noteOn);
+  MidiUSB.flush();
 }
 
 
@@ -16,12 +17,14 @@ void noteOff(byte channel, byte pitch, byte velocity)
 {
   midiEventPacket_t noteOff = {0x08, 0x80 | channel, pitch, velocity};
   MidiUSB.sendMIDI(noteOff);
+  MidiUSB.flush();
 }
 
 void controlChange(byte channel, byte control, byte value) 
 {
   midiEventPacket_t event = {0x0B, 0xB0 | channel, control, value};
   MidiUSB.sendMIDI(event);
+  MidiUSB.flush();
 }
 
 
@@ -45,7 +48,8 @@ void sendButtonPressMIDI ()
 {
  //0xC0 = Channel 1 Program Change
   //midi.send(0xC2, 0); 
-  controlChange(2, 0, 0);
+  //controlChange(2, 0, 0);
+  noteOn(2, 20, 64);
 }
 
 
@@ -53,14 +57,15 @@ void sendButtonPressTwiceMIDI ()
 {
  //0xC0 = Channel 1 Program Change
   //midi.send(0xC3, 0); 
-  controlChange(3, 0, 0);
+  noteOn(3, 40, 64);
 }
 
 
 void sendButtonHoldMIDI ()
 {
  //0xC0 = Channel 1 Program Change
-  controlChange(4, 0, 0);
+  //controlChange(4, 0, 0);
+  noteOn(4, 64, 64);
 }
 
 
