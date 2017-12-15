@@ -64,7 +64,7 @@ Finally, I added the USB hub and the FocusRite as if this was the final looper:
 
 ![cardboard-v2-open](./images/cardboard-v2-open.jpg)
 
-The result seems quite solid, as you can see below:
+The result is still preliminary but seems quite solid, as you can see below:
 
 ![final-cardboard-v2](./images/cardboard-v2-top.jpg)
 ![final-cardboard-v2](./images/cardboard-v2-front.jpg)
