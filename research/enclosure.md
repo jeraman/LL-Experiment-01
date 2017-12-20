@@ -89,9 +89,7 @@ After the last cardboard prototype, I decided to move on to a plexiglass box, bu
 Both Illustrator (original) and Corel Draw (converted) files are available [here](./images/cardboard-v2-back.jpg).
 
 **Important**
-```
-None of these versions are 100% complete and correct. The Illustrator one has the correct hole size for potentiometer, but misses the FocusRite holes made by Yves. On the other hand, the Corel version has the correct FocusRite holes, but potentiometer holes have a smaller size. Fix this problem for future versions.
-```
+> None of these versions are 100% complete and correct. The Illustrator one has the correct hole size for potentiometer, but misses the FocusRite holes made by Yves. The Corel version has the correct FocusRite holes, but potentiometer holes have a smaller size. Fix this problem for future versions.
 
 The result is looking good!
 
