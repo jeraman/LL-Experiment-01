@@ -73,6 +73,8 @@ The result is still preliminary but seems quite solid, as you can see below:
 I loved this version, as it allowed to test almost every aspect of the final looper!
 
 ## Iteration 5:  Plexiglass prototype
+![plexiglass-open](./images/plexiglass-open.jpg)
+
 After the last cardboard prototype, I decided to move on to a plexiglass box, built with laser cutting. Regarding this, I found a bunch of useful resources at [ITP's fabrication courses webpage](https://itp.nyu.edu/fab/). Yves was very helpful during this iteration (buy him a beer too). Key take-aways from my laser cutting experience are:
 
 - When creating a new file, remember to use landscape mode and RGB as color scheme;
@@ -88,11 +90,15 @@ Both Illustrator (original) and Corel Draw (converted) files are available [here
 
 **Important**: None of these versions are 100% complete and correct. The Illustrator one has the correct hole size for potentiometer, but misses the FocusRite holes made by Yves. On the other hand, the Corel version has the correct FocusRite holes, but potentiometer holes have a smaller size. Fix this problem for future versions.
 
-The resulting parts are:
-![plexiglass-open](./images/plexiglass-open.jpg)
+The result is looking good!
 
-## Final result
-It's looking good!
 ![plexiglass-1](./images/plexiglass-1.jpg)
 ![plexiglass-3](./images/plexiglass-3.jpg)
 ![plexiglass-4](./images/plexiglass-4.jpg)
+![plexiglass-6](./images/plexiglass-6.jpg)
+![plexiglass-5](./images/plexiglass-5.jpg)
+
+# Next Steps
+- Add white paper in between layers 1 and 2 of the top paper (that holds the iPad);
+- Buy smaller cables—one USB B to USB C; one USB to Firewire; one USB to Micro USB—for the inside;
+-
