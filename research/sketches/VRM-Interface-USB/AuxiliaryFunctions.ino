@@ -16,6 +16,11 @@ bool isButtonDown()
   return (buttonState == 1);
 }
 
+bool wasLastButtonStateDown()
+{
+  return (buttonLastState == 1);
+}
+
 
 bool buttonHasChangedState()
 {
@@ -25,15 +30,19 @@ bool buttonHasChangedState()
 
 bool buttonHasBeenPressed()
 {
-  return (isButtonDown() && buttonHasChangedState());
+  //return (isButtonDown() && buttonHasChangedState());      
+  return (wasLastButtonStateDown() && buttonHasChangedState());
 }
 
 
 bool buttonHasBeenDownForTwoSeconds()
 {
-  if (buttonPressedTimestamp == 0) return false;
-  elapsedDownTime = (millis() - buttonPressedTimestamp) / 1000;
-  return (isButtonDown() && !buttonHasChangedState() && elapsedDownTime >= 2.0);
+  startCountingPressHoldTimestampIfButtonIsDown();
+  
+  if (buttonPressHoldTimestamp == 0) return false;
+  unsigned long elapsed = (millis() - buttonPressHoldTimestamp) / 1000;
+  //Serial.println(elapsed);
+  return (isButtonDown() && !buttonHasChangedState() && elapsed >= 2.0);
 }
 
 
@@ -41,14 +50,30 @@ bool isSecondTimeButtonPressedInASecond()
 {
   if (buttonPressedTimestamp == 0) return false;
   elapsedDownTime = (millis() - buttonPressedTimestamp) / 1000;
-  return (elapsedDownTime < 1.0);
+  //return (elapsedDownTime < 1,0);
+  return (elapsedDownTime < 0.5);
 }
 
+
+void startCountingPressHoldTimestampIfButtonIsDown()
+{
+  if (isButtonDown() && buttonHasChangedState()) 
+    buttonPressHoldTimestamp = millis();
+
+  //if (!isButtonDown())
+  //  buttonPressHoldTimestamp = 0;
+}
 
 void resetButtonDownCounter()
 {
   buttonPressedTimestamp = 0;
   elapsedDownTime        = 0;
+}
+
+void resetPressHoldTimestamp()
+{
+  buttonPressHoldTimestamp = 0;
+  hasHadPressHoldEvent = true;
 }
 
 
@@ -58,18 +83,18 @@ void arcadeButtonControl()
 
   if (buttonHasBeenPressed())
   {
-    turnOnOffLED();
+    //turnOnOffLED();
 
     if (isSecondTimeButtonPressedInASecond())
       buttonPressedTwiceEvent();
-    else
+    else 
       buttonPressedEvent();
   }
 
   if (buttonHasBeenDownForTwoSeconds())
     buttonPressedAndHoldEvent();
-  else if (elapsedDownTime >= 2.0)
-    resetButtonDownCounter();
+  //else if (elapsedDownTime >= 2.0)
+  //  resetButtonDownCounter();
 
   buttonLastState = buttonState;
 }
@@ -96,24 +121,30 @@ void potentiometersControl()
 
 void potentiometer1Event()
 {
-  Serial.print("Pot 1: ");
-  Serial.println((float)(pot1val/1023.));
+  if (debug) Serial.print("Pot 1: ");
+  if (debug) Serial.println((float)(pot1val/1023.));
   sendFeedbackMIDI((float)(pot1val/1023.));
 }
 
 
 void potentiometer2Event()
 {
-  Serial.print("Pot 2: ");
-  Serial.println((float)(pot2val/1023.));
+  if (debug) Serial.print("Pot 2: ");
+  if (debug) Serial.println((float)(pot2val/1023.));
   sendPhasingMIDI((float)(pot2val/1023.));
 }
 
 
 void buttonPressedEvent()
 {
+  if (hasHadPressHoldEvent) 
+  {
+    hasHadPressHoldEvent = false;
+    return;
+  }
+
   buttonPressedTimestamp = millis();
-  Serial.println("Red button pressed!");
+  if (debug) Serial.println("Red button pressed!");
   sendButtonPressMIDI();
 }
 
@@ -121,15 +152,15 @@ void buttonPressedEvent()
 void buttonPressedTwiceEvent()
 {
   resetButtonDownCounter();
-  Serial.println("Red button pressed TWICE in a second!");
+  if (debug) Serial.println("Red button pressed TWICE in a second!");
   sendButtonPressTwiceMIDI();
 }
 
 
 void buttonPressedAndHoldEvent()
 {
-  resetButtonDownCounter();
-  Serial.println("Red button pressed and HOLD for 2 seconds!");
+  resetPressHoldTimestamp();
+  if (debug) Serial.println("Red button pressed and HOLD for 2 seconds!");
   sendButtonHoldMIDI();
 }
 

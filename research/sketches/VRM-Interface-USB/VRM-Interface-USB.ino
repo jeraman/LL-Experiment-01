@@ -16,6 +16,9 @@ int   buttonLastState = 0;
 float elapsedDownTime = 0;
 bool  isButtonLightOn = false;
 unsigned long  buttonPressedTimestamp = 0;
+unsigned long  buttonPressHoldTimestamp = 0;
+
+bool hasHadPressHoldEvent = false;
 
 //potentiometer variables
 float  pot1val         = 0;
@@ -23,6 +26,7 @@ float  pot2val         = 0;
 float  lastPot1val     = 0;
 float  lastPot2val     = 0;
 
+bool debug = false;
 
 //iterative loop
 void setup()
